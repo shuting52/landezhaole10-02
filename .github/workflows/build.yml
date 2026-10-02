@@ -23,7 +23,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # v1.1.13：大仓库（dist 含大量 APK）全量历史 fetch 触发服务器端 pack 打包错误（unresolved deltas），
+          # 改为浅克隆 + 稀疏检出：只拉构建所需的 app/console-apk/gradle/根配置，dist 无需检出（上传走 gh api）
+          fetch-depth: 1
+          sparse-checkout: |
+            app
+            console-apk
+            gradle
+            .github
+          sparse-checkout-cone-mode: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up JDK 17
