@@ -184,6 +184,9 @@ fun MainScreen(
         uiState.categories.sumOf { it.cards.size } + customSites.size
     }
 
+    // v1.1.13：工具箱对接分区「检查更新」用的协程作用域（refreshRemoteConfig 为 suspend）
+    val mainScope = rememberCoroutineScope()
+
     var showAddSiteDialog by remember { mutableStateOf(false) }
     var showCategoryBottomSheet by remember { mutableStateOf(false) }
     var showCloudUpdateDialog by remember { mutableStateOf(false) }
@@ -437,7 +440,15 @@ fun MainScreen(
                 AppBottomTab.TOOLBOX -> {
                     ToolboxScreen(
                         cloudTools = uiState.cloudTools,
-                        modifier = Modifier.padding(paddingValues)
+                        modifier = Modifier.padding(paddingValues),
+                        // v1.1.13：本机云端对接分区（对接本体核心能力）
+                        cloudReady = uiState.isCloudReady,
+                        cloudVersion = uiState.cloudVersion,
+                        cloudIpMonitor = uiState.cloudIpMonitor,
+                        cloudSettings = uiState.cloudSettings,
+                        onCheckUpdate = { mainScope.launch { viewModel.refreshRemoteConfig() } },
+                        onShowSplash = { viewModel.showSplash() },
+                        onOpenTheme = { viewModel.setThemeDialogVisible(true) }
                     )
                 }
                 AppBottomTab.SETTINGS -> {

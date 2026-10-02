@@ -136,7 +136,15 @@ enum class ToolCategory(
 fun ToolboxScreen(
     modifier: Modifier = Modifier,
     // v1.8.7：云端工具箱扩展工具（控制台增删，实时同步）
-    cloudTools: List<com.example.data.remote.ToolDto> = emptyList()
+    cloudTools: List<com.example.data.remote.ToolDto> = emptyList(),
+    // v1.1.13：本机云端对接分区参数（MainScreen 传入本体状态/回调）
+    cloudReady: Boolean = false,
+    cloudVersion: com.example.data.remote.VersionDto? = null,
+    cloudIpMonitor: com.example.data.remote.IpMonitorDto? = null,
+    cloudSettings: com.example.data.remote.SettingsDto? = null,
+    onCheckUpdate: () -> Unit = {},
+    onShowSplash: () -> Unit = {},
+    onOpenTheme: () -> Unit = {}
 ) {
     // 弹窗交互：点击工具弹出独立交互框
     var activeTool by remember { mutableStateOf<ToolboxTab?>(null) }
@@ -204,6 +212,17 @@ fun ToolboxScreen(
             // v1.1.4 工具箱分支：取消「精选工具/云端工具」分类标签，直接平铺展示全部工具
             // ===== 本地工具（嘴强嘴替/年龄推算/离线百宝/今天吃什么/紧急电话）=====
             ToolGrid(tabs = ToolboxTab.entries.toList()) { activeTool = it }
+
+            // ===== v1.1.13：本机云端对接分区（与本体软件核心能力对接）=====
+            AppBridgeSection(
+                cloudReady = cloudReady,
+                cloudVersion = cloudVersion,
+                cloudIpMonitor = cloudIpMonitor,
+                cloudSettings = cloudSettings,
+                onCheckUpdate = onCheckUpdate,
+                onShowSplash = onShowSplash,
+                onOpenTheme = onOpenTheme
+            )
 
             // ===== 云端工具（控制台实时同步，直接平铺）=====
             if (cloudTools.isNotEmpty()) {
