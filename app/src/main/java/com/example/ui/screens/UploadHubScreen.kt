@@ -419,7 +419,12 @@ private fun SkillGridCard(
                     .clip(RoundedCornerShape(10.dp))
                     .background(
                         if (res.previewUrl.isNotBlank())
-                            Brush.solidColor(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                            Brush.linearGradient(
+                                listOf(
+                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                )
+                            )
                         else
                             Brush.linearGradient(
                                 listOf(
