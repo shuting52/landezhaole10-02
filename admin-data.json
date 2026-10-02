@@ -3,6 +3,8 @@
     "code": 113,
     "name": "1.1.13",
     "changelog": [
+      "【03:48】更新开屏动画配置（默认/自定义模式）",
+      "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
       "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
       "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
       "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
@@ -12,9 +14,7 @@
       "【14:58】更新主题工具箱组件样式",
       "✨ v1.1.4 全面升级来啦～",
       "✅ 角标统一绿色呈现：站点角标采用统一荧光绿，动态流光+呼吸特效",
-      "✅ 主题切换组件定制真正生效：卡片/头部/搜索框可独立定制样式",
-      "✅ 软件版块：icon 删除「直达」字样；Skill 技能库取消分类标签直接平铺",
-      "✅ 工具箱：取消精选工具分类标签，工具直接平铺"
+      "✅ 主题切换组件定制真正生效：卡片/头部/搜索框可独立定制样式"
     ],
     "force": false,
     "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.13-1790968221.apk",
@@ -23150,7 +23150,7 @@
     }
   },
   "splash": {
-    "type": "html",
+    "type": "default",
     "customHtml": "/* From Uiverse.io by mi-series */ \n.button {\n  width: 150px;\n  padding: 0;\n  border: none;\n  transform: rotate(5deg);\n  transform-origin: center;\n  font-family: \"Gochi Hand\", cursive;\n  text-decoration: none;\n  font-size: 15px;\n  cursor: pointer;\n  padding-bottom: 3px;\n  border-radius: 5px;\n  box-shadow: 0 2px 0 #494a4b;\n  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);\n  background-color: #5cdb95;\n}\n\n.button span {\n  background: #f1f5f8;\n  display: block;\n  padding: 0.5rem 1rem;\n  border-radius: 5px;\n  border: 2px solid #494a4b;\n}\n\n.button:active {\n  transform: translateY(5px);\n  padding-bottom: 0px;\n  outline: 0;\n}",
     "mediaUrl": "",
     "durationSeconds": 3,
@@ -23168,6 +23168,8 @@
   "updateDialog": {
     "title": "懒得找了 v1.1.4 已上线",
     "changelog": [
+      "【03:48】更新开屏动画配置（默认/自定义模式）",
+      "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
       "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
       "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
       "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
@@ -23177,9 +23179,7 @@
       "【14:58】更新主题工具箱组件样式",
       "✨ v1.1.4 全面升级来啦～",
       "✅ 角标统一绿色呈现：站点角标采用统一荧光绿，动态流光+呼吸特效",
-      "✅ 主题切换组件定制真正生效：卡片/头部/搜索框可独立定制样式",
-      "✅ 软件版块：icon 删除「直达」字样；Skill 技能库取消分类标签直接平铺",
-      "✅ 工具箱：取消精选工具分类标签，工具直接平铺"
+      "✅ 主题切换组件定制真正生效：卡片/头部/搜索框可独立定制样式"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
