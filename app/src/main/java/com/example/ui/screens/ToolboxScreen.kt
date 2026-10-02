@@ -65,7 +65,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.ui.screens.toolbox.AgeCalculatorSection
-import com.example.ui.screens.toolbox.AppBridgeSection
 import com.example.ui.components.UiverseAmber
 import com.example.ui.components.UiverseBlue
 import com.example.ui.components.UiverseInk
@@ -90,34 +89,34 @@ enum class ToolboxTab(
     val desc: String
 ) {
     MOUTHPIECE(
-        title = "妙语连珠 · 国风嘴替",
-        shortLabel = "妙语嘴替",
+        title = "最强嘴替 · 神级回怼",
+        shortLabel = "最强嘴替",
         icon = Icons.Filled.Chat,
         desc = "神级回怼生成器 · 专治杠精职场催婚 · 优雅不带脏字"
     ),
     AGE_CALC(
-        title = "华夏时令 · 年龄生肖",
-        shortLabel = "时令生肖",
+        title = "年龄算术 · 生肖测算",
+        shortLabel = "年龄算术",
         icon = Icons.Filled.DateRange,
         desc = "精准年月日时分秒 · 生肖天干地支 · 人生进度条"
     ),
     OFFLINE_TREASURE(
-        title = "传世锦囊 · 离线百宝",
-        shortLabel = "离线锦囊",
+        title = "离线百宝 · 百宝锦囊",
+        shortLabel = "离线百宝",
         icon = Icons.Filled.Lightbulb,
         desc = "LED滚动弹幕 · 电子功德木鱼 · 随机做决定器 · SOS爆闪"
     ),
     FOOD_PICKER(
-        title = "锦鲤摇签 · 今天吃什么",
-        shortLabel = "锦鲤摇签",
+        title = "今天吃什么 · 随机摇签",
+        shortLabel = "今天吃什么",
         icon = Icons.Filled.Restaurant,
         desc = "随机摇签 · 各大菜系 · 配料调味料 · 华夏美食宝库"
     ),
     EMERGENCY_PHONE(
-        title = "安康守护 · 华夏应急热线",
-        shortLabel = "安康热线",
+        title = "紧急电话 · 救命热线",
+        shortLabel = "紧急电话",
         icon = Icons.Filled.Call,
-        desc = "全域公职服务 · 一键快捷呼出 · 覆盖全国地区守护平安"
+        desc = "救援/道路/举报/法律 · 一键快捷呼出 · 全国通用守护平安"
     )
 }
 
@@ -137,15 +136,7 @@ enum class ToolCategory(
 fun ToolboxScreen(
     modifier: Modifier = Modifier,
     // v1.8.7：云端工具箱扩展工具（控制台增删，实时同步）
-    cloudTools: List<com.example.data.remote.ToolDto> = emptyList(),
-    // v1.1.13：本机云端对接分区参数（MainScreen 传入本体状态/回调）
-    cloudReady: Boolean = false,
-    cloudVersion: com.example.data.remote.VersionDto? = null,
-    cloudIpMonitor: com.example.data.remote.IpMonitorDto? = null,
-    cloudSettings: com.example.data.remote.SettingsDto? = null,
-    onCheckUpdate: () -> Unit = {},
-    onShowSplash: () -> Unit = {},
-    onOpenTheme: () -> Unit = {}
+    cloudTools: List<com.example.data.remote.ToolDto> = emptyList()
 ) {
     // 弹窗交互：点击工具弹出独立交互框
     var activeTool by remember { mutableStateOf<ToolboxTab?>(null) }
@@ -211,19 +202,8 @@ fun ToolboxScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             // v1.1.4 工具箱分支：取消「精选工具/云端工具」分类标签，直接平铺展示全部工具
-            // ===== 本地工具（嘴强嘴替/年龄推算/离线百宝/今天吃什么/紧急电话）=====
+            // ===== 本地工具（最强嘴替/年龄算术/离线百宝/今天吃什么/紧急电话）=====
             ToolGrid(tabs = ToolboxTab.entries.toList()) { activeTool = it }
-
-            // ===== v1.1.13：本机云端对接分区（与本体软件核心能力对接）=====
-            AppBridgeSection(
-                cloudReady = cloudReady,
-                cloudVersion = cloudVersion,
-                cloudIpMonitor = cloudIpMonitor,
-                cloudSettings = cloudSettings,
-                onCheckUpdate = onCheckUpdate,
-                onShowSplash = onShowSplash,
-                onOpenTheme = onOpenTheme
-            )
 
             // ===== 云端工具（控制台实时同步，直接平铺）=====
             if (cloudTools.isNotEmpty()) {

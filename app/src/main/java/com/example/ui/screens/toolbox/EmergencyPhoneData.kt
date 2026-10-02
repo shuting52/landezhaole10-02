@@ -64,7 +64,11 @@ val NATIONAL_EMERGENCY_CATEGORIES: List<EmergencyCategory> = listOf(
             EmergencyNumber("水上遇险", "12395", "水上搜救、船舶遇险"),
             EmergencyNumber("森林火警", "12119", "森林火灾报警"),
             EmergencyNumber("地震速报", "12322", "地震台网地震速报（部分地区）"),
-            EmergencyNumber("短信报警", "12110", "不便通话时短信报警")
+            EmergencyNumber("短信报警", "12110", "不便通话时短信报警"),
+            // v1.1.14：补充更多救援/安全救命电话
+            EmergencyNumber("安全生产举报", "12350", "安全生产事故隐患举报投诉（应急管理部门）"),
+            EmergencyNumber("国家安全举报", "12339", "发现间谍行为/危害国家安全线索举报"),
+            EmergencyNumber("火灾隐患举报", "96119", "火灾隐患举报投诉（部分地区并入12345）")
         )
     ),
     EmergencyCategory(
@@ -75,7 +79,11 @@ val NATIONAL_EMERGENCY_CATEGORIES: List<EmergencyCategory> = listOf(
             EmergencyNumber("铁路客服", "12306", "火车票务、铁路服务"),
             EmergencyNumber("出租约车", "95128", "全国巡游出租汽车约车电话"),
             EmergencyNumber("航班服务", "95530", "中国东方航空客服"),
-            EmergencyNumber("地铁查询", "114", "查号台（可转各城市地铁服务）")
+            EmergencyNumber("地铁查询", "114", "查号台（可转各城市地铁服务）"),
+            // v1.1.14：补充道路出行救命/服务电话
+            EmergencyNumber("民航服务监督", "12326", "民航服务质量监督投诉（航班延误维权）"),
+            EmergencyNumber("天气预报", "12121", "全国天气预报查询（出行参考）"),
+            EmergencyNumber("公路救援", "12328", "道路运输/公路救援服务监督")
         )
     ),
     EmergencyCategory(
@@ -86,7 +94,10 @@ val NATIONAL_EMERGENCY_CATEGORIES: List<EmergencyCategory> = listOf(
             EmergencyNumber("税务服务", "12366", "纳税服务热线"),
             EmergencyNumber("海关服务", "12360", "海关业务咨询"),
             EmergencyNumber("市场监管", "12315", "消费维权、市场监督管理"),
-            EmergencyNumber("文化旅游", "12301", "旅游投诉与服务（部分并入12345）")
+            EmergencyNumber("文化旅游", "12301", "旅游投诉与服务（部分并入12345）"),
+            // v1.1.14：补充法律/法院服务
+            EmergencyNumber("法院诉讼服务", "12368", "法院诉讼服务热线（立案/案件查询/诉讼指引）"),
+            EmergencyNumber("公安违纪举报", "12389", "公安机关民警违法违纪举报")
         )
     ),
     EmergencyCategory(
@@ -96,7 +107,10 @@ val NATIONAL_EMERGENCY_CATEGORIES: List<EmergencyCategory> = listOf(
             EmergencyNumber("卫生健康", "12320", "卫生热线、健康咨询服务"),
             EmergencyNumber("公积金服务", "12329", "住房公积金服务热线"),
             EmergencyNumber("民政服务", "12349", "民政事务、养老服务（部分地区）"),
-            EmergencyNumber("残疾人服务", "12385", "残疾人服务热线")
+            EmergencyNumber("残疾人服务", "12385", "残疾人服务热线"),
+            // v1.1.14：补充妇儿/青少年维权
+            EmergencyNumber("妇女维权", "12338", "妇女儿童维权公益服务热线"),
+            EmergencyNumber("青少年服务", "12355", "青少年服务与心理援助热线")
         )
     ),
     EmergencyCategory(
@@ -117,7 +131,11 @@ val NATIONAL_EMERGENCY_CATEGORIES: List<EmergencyCategory> = listOf(
             EmergencyNumber("价格监督", "12358", "价格违法行为举报（并入12315）"),
             EmergencyNumber("网信举报", "12377", "互联网违法和不良信息举报"),
             EmergencyNumber("网络不良信息", "12321", "垃圾信息、骚扰电话举报"),
-            EmergencyNumber("邮政申诉", "12305", "快递、邮政服务申诉")
+            EmergencyNumber("邮政申诉", "12305", "快递、邮政服务申诉"),
+            // v1.1.14：补充反诈/政法举报
+            EmergencyNumber("全国反诈专线", "96110", "国家反诈中心预警劝阻专线（防诈骗救命热线）"),
+            EmergencyNumber("工信部反诈", "12381", "工信部反诈中心涉诈预警劝阻"),
+            EmergencyNumber("政法队伍举报", "12337", "政法队伍教育整顿线索举报（依法）")
         )
     ),
     EmergencyCategory(

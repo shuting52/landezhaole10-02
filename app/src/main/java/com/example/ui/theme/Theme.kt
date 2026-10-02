@@ -37,43 +37,26 @@ data class ThemePreset(
 )
 
 object ThemePresetsRepository {
-    // v1.0.19 软件主题：以「国庆节」为核心主体的可爱风格主题（保留可选）。
-    // 中国红主色 + 金星金辅色 + 暖米底色 + 半透玻璃卡片，氛围动态暖光（烟花/星星光斑）。
-    val nationalDayTheme = ThemePreset(
-        id = "national_day_cute",
-        name = "盛世华诞 · 国庆可爱",
-        style = "national_day",
-        categoryName = "国庆",
-        primaryColor = Color(0xFFE60012),
-        secondaryColor = Color(0xFFFFD700),
-        bgColor = Color(0xFFFFF6EF),
-        surfaceColor = Color(0xD9FFFFFF),
-        textColor = Color(0xFF4A1E22),
-        atmosphereEffect = AtmosphereEffect.FIREFLIES
-    )
-
-    // v1.1.3 新增「霓虹地图 · 荧光绿」主题（默认）：深色地图底 + 荧光绿地标(#00C080) + 白字，
-    // 氛围星空光点，呼应「地图+城市地标」Uiverse 组件配色。
-    // v1.1.11：默认主题改为「简约白」——本体软件背景采用白色，
-    // 透明磨砂玻璃改为不透明白色胶囊质感（用户需求：白色背景 + 胶囊形式）
-    val mapNeonTheme = ThemePreset(
-        id = "map_neon_green",
-        name = "简约白 · 清爽绿 (默认)",
-        style = "map_neon",
-        categoryName = "简约",
-        primaryColor = Color(0xFF00C080),
-        secondaryColor = Color(0xFF00E5A0),
-        bgColor = Color(0xFFFFFFFF),
+    // v1.1.14：主题切换回归「经典皮肤」——删除全局代码/组件定制功能，
+    // 仅保留默认经典皮肤（简单干净：经典蓝主色 + 纯白底 + 深灰字）与自定义背景。
+    val classicTheme = ThemePreset(
+        id = "classic_default",
+        name = "经典皮肤",
+        style = "classic",
+        categoryName = "经典",
+        primaryColor = Color(0xFF2196F3),
+        secondaryColor = Color(0xFF42A5F5),
+        bgColor = Color(0xFFFAFAFA),
         surfaceColor = Color(0xFFFFFFFF),
-        textColor = Color(0xFF1E293B),
-        atmosphereEffect = AtmosphereEffect.STARS
+        textColor = Color(0xFF212121),
+        atmosphereEffect = AtmosphereEffect.NONE
     )
 
-    val defaultTheme = mapNeonTheme
+    val defaultTheme = classicTheme
 
+    // 仅保留经典皮肤（主题切换即经典，无多余皮肤可选）
     val allThemes: List<ThemePreset> = listOf(
-        defaultTheme,
-        nationalDayTheme
+        classicTheme
     )
 }
 

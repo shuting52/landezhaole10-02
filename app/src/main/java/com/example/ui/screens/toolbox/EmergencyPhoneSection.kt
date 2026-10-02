@@ -72,14 +72,7 @@ import com.example.ui.theme.FlameRed
 fun EmergencyPhoneSection() {
     val context = LocalContext.current
 
-    // 当前地区选择（省/市/县/镇/乡/村 六级）
-    var selectedProvince by remember { mutableStateOf<String?>(null) }
-    var selectedCity by remember { mutableStateOf<RegionCity?>(null) }
-    var selectedCounty by remember { mutableStateOf<RegionCounty?>(null) }
-    var townText by remember { mutableStateOf("") }
-    var villageText by remember { mutableStateOf("") }
-    var showRegionPicker by remember { mutableStateOf(false) }
-
+    // v1.1.14：删除「选择地区」功能——直接展示全国通用号码，简化操作
     // 分类收纳：展开中的分类 id 集合（默认展开第一个「急救救援」）
     var expandedCats by remember { mutableStateOf(setOf(NATIONAL_EMERGENCY_CATEGORIES.first().id)) }
 
@@ -138,13 +131,13 @@ fun EmergencyPhoneSection() {
                 Spacer(modifier = Modifier.width(10.dp))
                 Column {
                     Text(
-                        text = "紧急电话 · 覆盖全中国",
+                        text = "紧急电话 · 全国通用",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Black,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "全域服务分类 · 一键快捷呼出 · 支持省/市/县/镇/乡/村选择",
+                        text = "救援/道路/举报/法律 · 一键快捷呼出 · 全国通用",
                         fontSize = 10.5.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -153,50 +146,6 @@ fun EmergencyPhoneSection() {
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-
-        // ---------- 地区选择器 ----------
-        Surface(
-            onClick = { showRegionPicker = true },
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Filled.LocationOn, contentDescription = null, tint = FlameRed, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "当前地区（省 → 市 → 县 → 镇/乡 → 村）",
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = buildString {
-                            append(selectedProvince ?: "全国")
-                            selectedCity?.let { append(" · ${it.name}") }
-                            selectedCounty?.let { append(" · ${it.name}") }
-                            if (townText.isNotBlank()) append(" · $townText")
-                            if (villageText.isNotBlank()) append(" · $villageText")
-                        }.ifBlank { "全国" },
-                        fontSize = 13.5.sp,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                Text(
-                    text = "切换 ▾",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = FlameRed
-                )
-            }
-        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -261,35 +210,6 @@ fun EmergencyPhoneSection() {
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
-    }
-
-    // ---------- 地区选择弹窗（省 → 市 → 县/区 → 镇/乡 → 村 六级） ----------
-    if (showRegionPicker) {
-        RegionPickerDialog(
-            regions = NATIONAL_REGIONS,
-            currentProvince = selectedProvince,
-            currentCity = selectedCity,
-            currentCounty = selectedCounty,
-            currentTown = townText,
-            currentVillage = villageText,
-            onSelect = { province, city, county, town, village ->
-                selectedProvince = province
-                selectedCity = city
-                selectedCounty = county
-                townText = town
-                villageText = village
-                showRegionPicker = false
-            },
-            onClear = {
-                selectedProvince = null
-                selectedCity = null
-                selectedCounty = null
-                townText = ""
-                villageText = ""
-                showRegionPicker = false
-            },
-            onDismiss = { showRegionPicker = false }
-        )
     }
 }
 

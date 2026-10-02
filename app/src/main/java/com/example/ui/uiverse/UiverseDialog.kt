@@ -165,7 +165,7 @@ fun UiverseDialog(
                     }
                 )
 
-                // 主题切换：仅保留「自定义代码应用」，不再展示英文分类入口（UI Kits/Buttons/Cards 等）
+                // v1.1.14：删除「全局代码 / 组件定制」功能——主题切换仅保留「恢复经典皮肤」与「自定义背景」。
                 // 顶部简单提示条
                 Row(
                     modifier = Modifier
@@ -175,14 +175,14 @@ fun UiverseDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Code,
+                        imageVector = Icons.Filled.Palette,
                         contentDescription = null,
                         tint = Color(0xFF8B5CF6),
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "自定义代码应用（识别软件全部 UI 组件，全局生效）",
+                        text = "主题外观：默认经典皮肤 · 自定义背景（图片/视频）",
                         color = Color(0xFFCBD5E1),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -191,8 +191,7 @@ fun UiverseDialog(
 
                 Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), thickness = 1.dp)
 
-                // 主题子页切换：全局自定义代码 / 组件级定制 / 自定义背景（图片·视频）
-                var themeSubTab by remember { mutableIntStateOf(0) }
+                // 按钮区：恢复经典皮肤 + 自定义背景（图片/视频）
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -204,82 +203,31 @@ fun UiverseDialog(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (themeSubTab == 0) Color(0xFF6366F1) else Color(0xFF1E2333))
-                            .clickable { themeSubTab = 0 }
+                            .background(Color(0xFF6366F1))
+                            .clickable {
+                                onResetDefault()
+                                Toast.makeText(context, "已恢复默认经典皮肤", Toast.LENGTH_SHORT).show()
+                                onClose()
+                            }
                             .padding(vertical = 8.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("全局代码", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (themeSubTab == 1) Color(0xFF8B5CF6) else Color(0xFF1E2333))
-                            .clickable { themeSubTab = 1 }
-                            .padding(vertical = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("组件定制", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (themeSubTab == 2) Color(0xFFEC4899) else Color(0xFF1E2333))
-                            .clickable { themeSubTab = 2 }
-                            .padding(vertical = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("自定义背景", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("恢复经典皮肤", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
 
-                // Body content
+                // Body content：仅自定义背景（本机选择图片/视频，全局应用，跨重启持久）
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f)
                 ) {
-                    when (themeSubTab) {
-                        0 -> {
-                            // 全局自定义代码应用
-                            CustomCodeEditorSection(
-                                cssText = customCssText,
-                                htmlText = customHtmlText,
-                                onCssChange = { customCssText = it },
-                                onHtmlChange = { customHtmlText = it },
-                                onApply = {
-                                    onApplyCustomCss(customCssText, customHtmlText)
-                                    Toast.makeText(context, "已成功解析并应用自定义主题代码到软件全部 UI！", Toast.LENGTH_SHORT).show()
-                                    onClose()
-                                },
-                                onReset = {
-                                    onResetDefault()
-                                    onClose()
-                                }
-                            )
-                        }
-                        1 -> {
-                            // 组件级定制：识别软件每个 UI 组件，独立代码输入
-                            ComponentThemeSection(
-                                componentThemes = componentThemes,
-                                onApplyComponentCss = { compId, css ->
-                                    onApplyComponentTheme(compId, css)
-                                    Toast.makeText(context, "已应用组件定制样式！", Toast.LENGTH_SHORT).show()
-                                }
-                            )
-                        }
-                        else -> {
-                            // 自定义背景：本机直接选择图片/视频，全局应用（复制到本地私有目录，跨重启持久）
-                            BackgroundMediaSection(
-                                localBgMediaType = localBgMediaType,
-                                onPickImage = onPickLocalImage,
-                                onPickVideo = onPickLocalVideo,
-                                onClear = onClearLocalBgMedia
-                            )
-                        }
-                    }
+                    BackgroundMediaSection(
+                        localBgMediaType = localBgMediaType,
+                        onPickImage = onPickLocalImage,
+                        onPickVideo = onPickLocalVideo,
+                        onClear = onClearLocalBgMedia
+                    )
                 }
             }
         }

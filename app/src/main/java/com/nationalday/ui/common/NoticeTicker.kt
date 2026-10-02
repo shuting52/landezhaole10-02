@@ -91,7 +91,7 @@ fun NationalDayNoticeTicker(
                 .padding(horizontal = 6.dp, vertical = 2.dp)
         ) {
             Text(
-                text = "华诞特辑",
+                text = "公告",
                 color = Color(0xFF7F1D1D),
                 fontSize = 9.5.sp,
                 fontWeight = FontWeight.Black

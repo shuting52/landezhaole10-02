@@ -407,65 +407,67 @@ private fun SkillGridCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column {
-            // 预览区：有视频/预览图则展示缩略图，否则渐变占位（取消 icon 图标功能）
-            if (res.previewUrl.isNotBlank()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(72.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    coil.compose.AsyncImage(
-                        model = res.previewUrl,
-                        contentDescription = res.title,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    if (isVideo) {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape)
-                                .background(Color.Black.copy(alpha = 0.55f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.PlayArrow,
-                                contentDescription = "视频",
-                                tint = Color.White,
-                                modifier = Modifier.size(13.dp)
-                            )
-                        }
-                    }
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(72.dp)
-                        .background(
+        // v1.1.14：Skill 排版修复——竖屏改横屏：预览缩略图在左、信息在右，宽度自适应屏宽
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 左侧：预览缩略图（有预览图/视频展示缩略，否则渐变占位）
+            Box(
+                modifier = Modifier
+                    .size(76.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(
+                        if (res.previewUrl.isNotBlank())
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        else
                             Brush.linearGradient(
                                 listOf(
                                     MaterialTheme.colorScheme.primary.copy(alpha = 0.22f),
                                     MaterialTheme.colorScheme.tertiary.copy(alpha = 0.18f)
                                 )
                             )
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(if (isVideo) "🎬" else if (isZip) "📦" else if (isMd) "📄" else "🧠", fontSize = 22.sp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (res.previewUrl.isNotBlank()) {
+                    coil.compose.AsyncImage(
+                        model = res.previewUrl,
+                        contentDescription = res.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Text(if (isVideo) "🎬" else if (isZip) "📦" else if (isMd) "📄" else "🧠", fontSize = 24.sp)
+                }
+                if (isVideo) {
+                    Box(
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(alpha = 0.55f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.PlayArrow,
+                            contentDescription = "视频",
+                            tint = Color.White,
+                            modifier = Modifier.size(12.dp)
+                        )
+                    }
                 }
             }
-            // 标题 + 作者（取消 icon 图标功能，仅展示控制台上传的标题与作者信息）
-            Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            // 右侧：标题 + 类型/作者 + 操作按钮（横排呈现，宽度自适应）
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = res.title,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -492,72 +494,70 @@ private fun SkillGridCard(
                         )
                     }
                 }
-            }
-            // 底部操作按钮：严格遵循控制台上传形式——仅「下载」（文件形式）/「跳转」（URL 形式）两个按钮
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
-            ) {
-                if (canDownload) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFF22C55E).copy(alpha = 0.12f))
-                            .clickable { downloadSkill(fileLink) }
-                            .padding(horizontal = 10.dp, vertical = 5.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Filled.Download,
-                                contentDescription = null,
-                                tint = Color(0xFF22C55E),
-                                modifier = Modifier.size(13.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "下载",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF22C55E)
-                            )
+                Spacer(modifier = Modifier.height(6.dp))
+                // 底部操作按钮：仅「下载」（文件形式）/「跳转」（URL 形式）
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    if (canDownload) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF22C55E).copy(alpha = 0.12f))
+                                .clickable { downloadSkill(fileLink) }
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Download,
+                                    contentDescription = null,
+                                    tint = Color(0xFF22C55E),
+                                    modifier = Modifier.size(13.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "下载",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF22C55E)
+                                )
+                            }
                         }
                     }
-                }
-                if (canJump) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
-                            .clickable { jumpSkill(jumpUrl) }
-                            .padding(horizontal = 10.dp, vertical = 5.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Filled.OpenInNew,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(13.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "跳转",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                    if (canJump) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                                .clickable { jumpSkill(jumpUrl) }
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.OpenInNew,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(13.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "跳转",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
-                }
-                if (showDelete) {
-                    Text(
-                        text = "删除",
-                        fontSize = 9.sp,
-                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
-                        modifier = Modifier.clickable { onDelete() }.padding(4.dp)
-                    )
+                    if (showDelete) {
+                        Text(
+                            text = "删除",
+                            fontSize = 9.sp,
+                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                            modifier = Modifier.clickable { onDelete() }.padding(4.dp)
+                        )
+                    }
                 }
             }
         }

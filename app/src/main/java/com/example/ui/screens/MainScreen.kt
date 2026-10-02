@@ -184,9 +184,6 @@ fun MainScreen(
         uiState.categories.sumOf { it.cards.size } + customSites.size
     }
 
-    // v1.1.13：工具箱对接分区「检查更新」用的协程作用域（refreshRemoteConfig 为 suspend）
-    val mainScope = rememberCoroutineScope()
-
     var showAddSiteDialog by remember { mutableStateOf(false) }
     var showCategoryBottomSheet by remember { mutableStateOf(false) }
     var showCloudUpdateDialog by remember { mutableStateOf(false) }
@@ -277,7 +274,13 @@ fun MainScreen(
                             )
                         }
 
-                        // v1.1.12：删除首页跑马灯（用户要求，截图5）——不再显示跑马灯公告及「华诞特辑」标签
+                        // v1.1.14：恢复首页顶部公告栏跑马灯功能（公告内容来自云端控制台 marquee，可自定义开关与文案）
+                        item(span = { GridItemSpan(3) }) {
+                            com.nationalday.ui.common.NationalDayNoticeTicker(
+                                notice = uiState.cloudMarquee?.defaultText?.takeIf { it.isNotBlank() }
+                                    ?: "欢迎使用懒得找了～海量白嫖资源等你探索，遇到问题请到官方群反馈！"
+                            )
+                        }
 
                         // 2. 随心抽按钮 (分类标签已按要求从主页移除，仅在随心抽弹窗内部保留)
                         item(span = { GridItemSpan(3) }) {
@@ -440,15 +443,7 @@ fun MainScreen(
                 AppBottomTab.TOOLBOX -> {
                     ToolboxScreen(
                         cloudTools = uiState.cloudTools,
-                        modifier = Modifier.padding(paddingValues),
-                        // v1.1.13：本机云端对接分区（对接本体核心能力）
-                        cloudReady = uiState.isCloudReady,
-                        cloudVersion = uiState.cloudVersion,
-                        cloudIpMonitor = uiState.cloudIpMonitor,
-                        cloudSettings = uiState.cloudSettings,
-                        onCheckUpdate = { mainScope.launch { viewModel.refreshRemoteConfig() } },
-                        onShowSplash = { viewModel.showSplash() },
-                        onOpenTheme = { viewModel.setThemeDialogVisible(true) }
+                        modifier = Modifier.padding(paddingValues)
                     )
                 }
                 AppBottomTab.SETTINGS -> {

@@ -464,7 +464,9 @@ fun GlobalWindBackground(
                                             if (vw > 0 && vh > 0) {
                                                 val viewW = width.toFloat().coerceAtLeast(1f)
                                                 val viewH = height.toFloat().coerceAtLeast(1f)
-                                                val s = kotlin.math.max(viewW / vw, viewH / vh)
+                                                // v1.1.14：修复视频背景被放大裁切问题——改为 fit 模式：
+                                                // 保持视频原始比例完整显示（不放大、不裁切），居中摆放
+                                                val s = kotlin.math.min(viewW / vw, viewH / vh)
                                                 val matrix = android.graphics.Matrix().apply {
                                                     setScale(s, s)
                                                     postTranslate((viewW - vw * s) / 2f, (viewH - vh * s) / 2f)
