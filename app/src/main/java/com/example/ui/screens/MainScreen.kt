@@ -400,7 +400,7 @@ fun MainScreen(
                                 .fillMaxWidth(0.9f)
                                 .clip(RoundedCornerShape(14.dp))
                                 .background(Color(0xFF70C489))
-                                .padding(horizontal = 14.dp, top = 12.dp),
+                                .padding(start = 14.dp, end = 14.dp, top = 12.dp),
                             horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
                             RadioInputTab(
