@@ -155,7 +155,8 @@ private fun NumPad(
 fun CalculatorScreenView(modifier: Modifier = Modifier) {
     var expr by remember { mutableStateOf("0") }
     var result by remember { mutableStateOf("") }
-    var history by remember { mutableStateListOf<String>() }
+    // 注意：mutableStateListOf 不支持 by 委托，必须用 val + remember
+    val history = remember { mutableStateListOf<String>() }
 
     fun evaluate(e: String): String {
         return try {
@@ -239,11 +240,11 @@ private fun evalSimple(s: String): Double {
 fun UnitConvertScreenView(modifier: Modifier = Modifier) {
     val categories = listOf("长度", "重量", "温度", "面积", "体积")
     var cat by remember { mutableStateOf("长度") }
-    // 单位表：名称 to 对基准单位的倍率
-    val unitsMap = mapOf(
+    // 单位表：名称 to 对基准单位的倍率（温度用 0/1/2 标记，由 tempConvert 特殊处理）
+    val unitsMap: Map<String, List<Pair<String, Double>>> = mapOf(
         "长度" to listOf("毫米" to 0.001, "厘米" to 0.01, "米" to 1.0, "千米" to 1000.0, "英寸" to 0.0254, "英尺" to 0.3048, "英里" to 1609.344),
         "重量" to listOf("毫克" to 0.001, "克" to 1.0, "千克" to 1000.0, "吨" to 1_000_000.0, "斤" to 500.0, "磅" to 453.59237, "盎司" to 28.349523),
-        "温度" to listOf("摄氏度", "华氏度", "开尔文"),
+        "温度" to listOf("摄氏度" to 0.0, "华氏度" to 1.0, "开尔文" to 2.0),
         "面积" to listOf("平方厘米" to 0.0001, "平方米" to 1.0, "公顷" to 10000.0, "平方千米" to 1_000_000.0, "亩" to 666.6667, "平方英尺" to 0.092903),
         "体积" to listOf("毫升" to 0.001, "升" to 1.0, "立方米" to 1000.0, "加仑" to 3.785412, "立方英尺" to 28.316847)
     )
@@ -281,7 +282,7 @@ fun UnitConvertScreenView(modifier: Modifier = Modifier) {
             }
         }
         OutlinedTextField(value = input, onValueChange = { input = it.filter { c -> c.isDigit() || c == '.' }; convert() }, label = { Text("输入数值") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), modifier = Modifier.fillMaxWidth())
-        Row(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             units.forEachIndexed { idx, u ->
                 Box(
                     modifier = Modifier
@@ -549,10 +550,11 @@ fun ScoreboardScreenView(modifier: Modifier = Modifier) {
 fun FlashlightScreenView(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var on by remember { mutableStateOf(false) }
-    var colorHex by remember { mutableStateOf(0xFFFFFF) }
+    // 颜色值统一用 Long（0xFF 开头 8 位十六进制超出 Int 范围）
+    var colorHex by remember { mutableStateOf(0xFFFFFFFFL) }
     val colors = listOf(
-        0xFFFFFF to "白光", 0xFFF5E6C8 to "暖光", 0xFFFFE0B2 to "橙光",
-        0xFFFFCDD2 to "粉光", 0xFFB3E5FC to "蓝光", 0xFFC8E6C9 to "绿光"
+        0xFFFFFFFFL to "白光", 0xFFF5E6C8L to "暖光", 0xFFFFE0B2L to "橙光",
+        0xFFFFCDD2L to "粉光", 0xFFB3E5FCL to "蓝光", 0xFFC8E6C9L to "绿光"
     )
     Column(modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         ToolHeader("补光灯", "拍摄补光 · 内置多种光效 · 点击切换")
