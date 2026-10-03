@@ -113,7 +113,10 @@ fun GlobalWindBackground(
     val activePrimary = themePrimaryColor ?: Color(0xFF00C080)
     // v1.1.10：控制台「主题工具箱」global 组件可覆盖全局背景色（优先级：控制台 > 主题预设 > 默认）
     val globalComp = ComponentThemeResolver.resolve(LocalComponentThemes.current, "global")
-    val activeBg = globalComp?.backgroundColor ?: (themeBgColor ?: Color(0xFFFFFFFF))
+    // v1.1.22：global.css 纯白背景（默认配置）视为未定制，强制恢复经典皮肤胶囊渐变背景，不再整页白底
+    val globalBg = globalComp?.backgroundColor
+    val effectiveGlobalBg = if (globalBg != null && globalBg != Color.White) globalBg else null
+    val activeBg = effectiveGlobalBg ?: (themeBgColor ?: Color(0xFFFFFFFF))
 
     Box(modifier = modifier.fillMaxSize()) {
         // ========== 1. 底层动态全屏画布：渲染多层悬浮流动胶囊与微光粒子群 ==========
@@ -220,7 +223,8 @@ fun GlobalWindBackground(
             uiverse.customStyle?.backgroundBrush != null -> {
                 Box(modifier = Modifier.fillMaxSize().background(uiverse.customStyle.backgroundBrush))
             }
-            uiverse.customStyle?.backgroundColor != null -> {
+            // v1.1.22：纯白背景（global.css 默认）视为未定制，落入经典胶囊渐变分支
+            uiverse.customStyle?.backgroundColor != null && uiverse.customStyle.backgroundColor != Color.White -> {
                 Box(modifier = Modifier.fillMaxSize().background(uiverse.customStyle.backgroundColor))
             }
             else -> {

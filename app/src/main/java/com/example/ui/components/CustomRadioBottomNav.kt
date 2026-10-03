@@ -75,19 +75,19 @@ fun CustomRadioBottomNav(
                         .weight(1f)
                         .background(if (isSelected) UiverseBlue else Color.White)
                         .clickable { onTabSelected(tab) }
-                        .padding(vertical = 2.dp),
+                        .padding(vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     val text = pair.substringAfter(' ').ifBlank { pair }
                     val icon = pair.substringBefore(' ')
                     Text(
                         text = icon,
-                        fontSize = 12.sp,
+                        fontSize = 16.sp,
                         color = if (isSelected) Color.White else UiverseTextMuted
                     )
                     Text(
                         text = text,
-                        fontSize = 7.sp,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isSelected) Color.White else UiverseTextMuted
                     )
@@ -95,8 +95,8 @@ fun CustomRadioBottomNav(
                         Spacer(modifier = Modifier.height(1.dp))
                         Box(
                             modifier = Modifier
-                                .width(10.dp)
-                                .height(2.dp)
+                                .width(14.dp)
+                                .height(3.dp)
                                 .background(UiversePink, RoundedCornerShape(1.dp))
                         )
                     }

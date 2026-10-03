@@ -197,7 +197,10 @@ fun ResourceCard(
         CardStylePreset.CUSTOM -> {
             val custom = uiverse.customStyle
             val customBorder = custom?.borderColor
-            val bColor = if (customBorder != null && customBorder != Color.Transparent) customBorder else MaterialTheme.colorScheme.outline
+            val bColor = if (customBorder != null && customBorder != Color.Transparent) customBorder
+            // v1.1.22：仅 global.css 纯白默认（无主动边框定制）时，恢复经典金色边框，保证卡片有清晰描边
+            else if (custom?.backgroundColor == Color.White) Color(0xFFFFD700).copy(alpha = 0.55f)
+            else MaterialTheme.colorScheme.outline
             val bWidth = custom?.borderWidth ?: 1.dp
             Modifier.border(bWidth, bColor, cardShape)
         }
