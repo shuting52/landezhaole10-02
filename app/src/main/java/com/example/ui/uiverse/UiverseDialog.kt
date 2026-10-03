@@ -1234,7 +1234,6 @@ private fun ComponentThemeSection(
 // ==========================================
 // 自定义背景：本机直接选择图片/视频作为全局背景（跨重启持久、全局应用）
 // ==========================================
-@Composable
 /**
  * v1.2.0：渐变色主题选择（10+ 款柔和渐变，点击一键切换）
  */
@@ -1343,6 +1342,7 @@ private fun DynamicEffectSection(
     }
 }
 
+@Composable
 private fun BackgroundMediaSection(
     localBgMediaType: String = "none",
     onPickImage: () -> Unit,

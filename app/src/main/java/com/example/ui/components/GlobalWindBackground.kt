@@ -40,7 +40,6 @@ import com.example.ui.components.LocalComponentThemes
 import com.example.ui.uiverse.PatternStylePreset
 import com.example.ui.uiverse.UiKitPreset
 import com.example.ui.uiverse.DynamicEffectPreset
-import androidx.compose.runtime.Composable
 import kotlin.math.sin
 
 // Uiverse.io Warm Peach Wind Gradient Palette
