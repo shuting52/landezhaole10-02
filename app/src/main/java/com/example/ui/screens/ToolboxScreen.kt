@@ -33,12 +33,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Score
+import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,10 +82,20 @@ import com.example.ui.components.UiversePink
 import com.example.ui.components.UiverseTextMuted
 import com.example.ui.components.UiverseTrack
 import com.example.ui.components.neoShadow
+import com.example.ui.screens.toolbox.CalculatorScreenView
+import com.example.ui.screens.toolbox.CountdownScreenView
+import com.example.ui.screens.toolbox.DecideScreenView
+import com.example.ui.screens.toolbox.DigitalClockScreenView
 import com.example.ui.screens.toolbox.EmergencyPhoneSection
+import com.example.ui.screens.toolbox.FlashlightScreenView
 import com.example.ui.screens.toolbox.FoodPickerScreenView
+import com.example.ui.screens.toolbox.LedgerScreenView
 import com.example.ui.screens.toolbox.MouthpieceSection
 import com.example.ui.screens.toolbox.OfflineTreasureSection
+import com.example.ui.screens.toolbox.QuickNoteScreenView
+import com.example.ui.screens.toolbox.ScoreboardScreenView
+import com.example.ui.screens.toolbox.TimeCalcScreenView
+import com.example.ui.screens.toolbox.UnitConvertScreenView
 
 /**
  * 工具箱（v1.0.4 精简版）：
@@ -117,6 +137,67 @@ enum class ToolboxTab(
         shortLabel = "紧急电话",
         icon = Icons.Filled.Call,
         desc = "救援/道路/举报/法律 · 一键快捷呼出 · 全国通用守护平安"
+    ),
+    // ===== v1.1.16 新增内置工具（真正可用，无需跳转外链） =====
+    CALCULATOR(
+        title = "计算器+ · 带历史",
+        shortLabel = "计算器+",
+        icon = Icons.Filled.Calculate,
+        desc = "带计算历史 · 多项连续运算 · 本地即开即用"
+    ),
+    UNIT_CONVERT(
+        title = "单位换算 · 多类单位",
+        shortLabel = "单位换算",
+        icon = Icons.Filled.Straighten,
+        desc = "长度/重量/温度/面积/体积 · 本地即时换算"
+    ),
+    COUNTDOWN(
+        title = "数日子 · 倒数提醒",
+        shortLabel = "数日子",
+        icon = Icons.Filled.Event,
+        desc = "生日/纪念日倒数与已过天数 · 本地保存"
+    ),
+    TIME_CALC(
+        title = "时间计算 · 相距多久",
+        shortLabel = "时间计算",
+        icon = Icons.Filled.Schedule,
+        desc = "两个日期相距多少年/月/天/时/分/秒"
+    ),
+    DECIDE(
+        title = "帮我做决定 · 选择困难",
+        shortLabel = "帮我做决定",
+        icon = Icons.Filled.Casino,
+        desc = "输入选项随机抽取 · 选择困难终结者"
+    ),
+    DIGITAL_CLOCK(
+        title = "数字时钟 · 翻页时钟",
+        shortLabel = "数字时钟",
+        icon = Icons.Filled.AccessTime,
+        desc = "沉浸式翻页时钟 · 每秒实时刷新 · 计时专注"
+    ),
+    SCOREBOARD(
+        title = "计分板 · 比赛记分",
+        shortLabel = "计分板",
+        icon = Icons.Filled.Score,
+        desc = "乒乓球/篮球/台球/足球… 多人计分 · 历史可查"
+    ),
+    FLASHLIGHT(
+        title = "补光灯 · 拍摄补光",
+        shortLabel = "补光灯",
+        icon = Icons.Filled.FlashOn,
+        desc = "拍摄补光 · 内置多种光效 · 还可当小夜灯"
+    ),
+    QUICK_NOTE(
+        title = "随手记 · 打卡记录",
+        shortLabel = "随手记",
+        icon = Icons.Filled.EditNote,
+        desc = "打卡/记录/目标进度 · 本地保存不丢失"
+    ),
+    LEDGER(
+        title = "极简记账 · 收支明细",
+        shortLabel = "极简记账",
+        icon = Icons.Filled.AccountBalanceWallet,
+        desc = "本地收支记账 · 分类统计 · 报表一目了然"
     )
 }
 
@@ -274,6 +355,16 @@ fun ToolboxScreen(
                                 ToolboxTab.OFFLINE_TREASURE -> OfflineTreasureScreenView()
                                 ToolboxTab.FOOD_PICKER -> FoodPickerScreenView()
                                 ToolboxTab.EMERGENCY_PHONE -> EmergencyPhoneSection()
+                                ToolboxTab.CALCULATOR -> CalculatorScreenView()
+                                ToolboxTab.UNIT_CONVERT -> UnitConvertScreenView()
+                                ToolboxTab.COUNTDOWN -> CountdownScreenView()
+                                ToolboxTab.TIME_CALC -> TimeCalcScreenView()
+                                ToolboxTab.DECIDE -> DecideScreenView()
+                                ToolboxTab.DIGITAL_CLOCK -> DigitalClockScreenView()
+                                ToolboxTab.SCOREBOARD -> ScoreboardScreenView()
+                                ToolboxTab.FLASHLIGHT -> FlashlightScreenView()
+                                ToolboxTab.QUICK_NOTE -> QuickNoteScreenView()
+                                ToolboxTab.LEDGER -> LedgerScreenView()
                             }
                         }
                     }
