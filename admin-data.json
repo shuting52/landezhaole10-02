@@ -1,16 +1,16 @@
 {
  "version": {
-  "code": 122,
-  "name": "1.1.22",
+  "code": 123,
+  "name": "1.1.23",
   "changelog": [
-   "✨ v1.1.22 更新来啦～",
-   "【站点卡片】恢复清晰金色描边（浅粉→浅紫→浅蓝渐变+黑字基础上），卡片立体感更强",
-   "【底部导航】Tab 图标与文字放大 1.4 倍，点击更顺手",
-   "【背景修复】纯白背景强制恢复经典皮肤胶囊渐变（不再整页白底），软件观感回到经典暖色系"
+   "✨ v1.1.23 更新来啦～",
+   "【下载提速】更新包下载改为国内加速镜像优先（ghfast/ghproxy/jsdmir 等），不再卡在 8% 等超时，速度大幅提升",
+   "【控制台提速】控制台连接云端同样镜像优先 + 8 秒超时，不再半天没动静",
+   "【WiFi/流量识别】下载前自动识别当前网络：移动流量时提示流量消耗，WiFi 下畅快下载"
   ],
   "force": false,
-  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.22-1791026776.apk",
-  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.22-1791026776.apk"
+  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.23-1791027620.apk",
+  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.23-1791027620.apk"
  },
  "home": {
   "categories": [
