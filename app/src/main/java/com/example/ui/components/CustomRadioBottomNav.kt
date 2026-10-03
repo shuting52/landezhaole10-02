@@ -51,22 +51,22 @@ fun CustomRadioBottomNav(
         modifier = modifier
             .fillMaxWidth()
             .padding(WindowInsets.navigationBars.asPaddingValues())
-            .padding(horizontal = 10.dp, vertical = 2.dp)
+            .padding(horizontal = 4.dp, vertical = 1.dp)
             .testTag("custom_radio_bottom_nav")
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .neoShadow(
-                    offsetX = 4.dp,
-                    offsetY = 4.dp,
+                    offsetX = 3.dp,
+                    offsetY = 3.dp,
                     shadowColor = UiverseBlue,
                     borderColor = UiverseInk,
-                    borderWidth = 2.5.dp,
-                    shape = RoundedCornerShape(16.dp),
+                    borderWidth = 2.dp,
+                    shape = RoundedCornerShape(13.dp),
                     backgroundColor = Color.White
                 )
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(13.dp))
         ) {
             items.forEachIndexed { index, (tab, pair) ->
                 val isSelected = selectedTab == tab
@@ -75,19 +75,19 @@ fun CustomRadioBottomNav(
                         .weight(1f)
                         .background(if (isSelected) UiverseBlue else Color.White)
                         .clickable { onTabSelected(tab) }
-                        .padding(vertical = 3.dp),
+                        .padding(vertical = 2.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     val text = pair.substringAfter(' ').ifBlank { pair }
                     val icon = pair.substringBefore(' ')
                     Text(
                         text = icon,
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         color = if (isSelected) Color.White else UiverseTextMuted
                     )
                     Text(
                         text = text,
-                        fontSize = 8.sp,
+                        fontSize = 7.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isSelected) Color.White else UiverseTextMuted
                     )
@@ -95,7 +95,7 @@ fun CustomRadioBottomNav(
                         Spacer(modifier = Modifier.height(1.dp))
                         Box(
                             modifier = Modifier
-                                .width(12.dp)
+                                .width(10.dp)
                                 .height(2.dp)
                                 .background(UiversePink, RoundedCornerShape(1.dp))
                         )

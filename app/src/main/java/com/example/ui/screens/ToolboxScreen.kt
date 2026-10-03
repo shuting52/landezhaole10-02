@@ -35,16 +35,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.SentimentSatisfied
 import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -80,13 +82,15 @@ import com.example.ui.components.UiverseTrack
 import com.example.ui.components.neoShadow
 import com.example.ui.screens.toolbox.AlipayVoiceSection
 import com.example.ui.screens.toolbox.ColdJokeSection
-import com.example.ui.screens.toolbox.CustomToolsSection
+import com.example.ui.screens.toolbox.CurrencySection
 import com.example.ui.screens.toolbox.EmergencyPhoneSection
 import com.example.ui.screens.toolbox.EnvCheckSection
 import com.example.ui.screens.toolbox.FoodPickerScreenView
 import com.example.ui.screens.toolbox.LicensePlateSection
 import com.example.ui.screens.toolbox.MouthpieceSection
 import com.example.ui.screens.toolbox.OfflineTreasureSection
+import com.example.ui.screens.toolbox.PeriodSection
+import com.example.ui.screens.toolbox.RainSoundSection
 import com.example.ui.screens.toolbox.SpeedTestSection
 
 /**
@@ -129,13 +133,7 @@ enum class ToolboxTab(
         icon = Icons.Filled.Call,
         desc = "救援/道路/举报/法律 · 一键快捷呼出 · 全国通用守护平安"
     ),
-    // ========== v1.1.18 新增 5 工具 ==========
-    CUSTOM_TOOLS(
-        title = "我的工具夹 · 老师/上班/记录",
-        shortLabel = "我的工具夹",
-        icon = Icons.Filled.Work,
-        desc = "列表形式 · 老师用/上班用/记录用 · 可任意添加编辑删除"
-    ),
+    // ========== v1.1.18 新增工具 ==========
     ALIPAY_VOICE(
         title = "支付宝到账语音",
         shortLabel = "到账语音",
@@ -165,6 +163,24 @@ enum class ToolboxTab(
         shortLabel = "环境检测",
         icon = Icons.Filled.Public,
         desc = "IP 地址 · 地理位置 · 代理/VPN · 网络类型一键检测"
+    ),
+    RAIN_SOUND(
+        title = "雨声助眠 · 睡眠神器",
+        shortLabel = "雨声助眠",
+        icon = Icons.Filled.Cloud,
+        desc = "9种环境音效 · 自定义导入 · 定时 · 智能睡眠检测"
+    ),
+    PERIOD(
+        title = "生理期记录 · 周期看板",
+        shortLabel = "生理期",
+        icon = Icons.Filled.Favorite,
+        desc = "开始/结束日期 · 备注 · 保存删除 · 周期看板"
+    ),
+    CURRENCY(
+        title = "货币转换 · 全球汇率",
+        shortLabel = "货币转换",
+        icon = Icons.Filled.MonetizationOn,
+        desc = "全球50+货币 · 实时汇率 · 双向换算"
     )
 }
 
@@ -323,12 +339,14 @@ fun ToolboxScreen(
                                 ToolboxTab.FOOD_PICKER -> FoodPickerScreenView()
                                 ToolboxTab.EMERGENCY_PHONE -> EmergencyPhoneSection()
                                 // v1.1.18 新增
-                                ToolboxTab.CUSTOM_TOOLS -> CustomToolsSection()
                                 ToolboxTab.ALIPAY_VOICE -> AlipayVoiceSection()
                                 ToolboxTab.LICENSE_PLATE -> LicensePlateSection()
                                 ToolboxTab.COLD_JOKE -> ColdJokeSection()
                                 ToolboxTab.SPEED_TEST -> SpeedTestSection()
                                 ToolboxTab.ENV_CHECK -> EnvCheckSection()
+                                ToolboxTab.RAIN_SOUND -> RainSoundSection()
+                                ToolboxTab.PERIOD -> PeriodSection()
+                                ToolboxTab.CURRENCY -> CurrencySection()
                             }
                         }
                     }
