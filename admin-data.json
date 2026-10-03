@@ -1,16 +1,17 @@
 {
  "version": {
-  "code": 126,
-  "name": "1.2.1",
+  "code": 127,
+  "name": "1.2.2",
   "changelog": [
-   "✨ v1.2.1 更新来啦～",
-   "【修复】主题外观闪退问题已修复（渐变颜色主题/动态效果主题/自定义背景均可正常打开切换）",
-   "【移除】工具箱移除「到账语音」「雨声助眠」两个工具",
-   "【优化】主题切换弹窗更稳定，滚动流畅"
+   "✨ v1.2.2 更新来啦～",
+   "【UI跟随主题】切换渐变/经典主题时，站点卡片、底部导航、工具箱标题、设置页头部同步变色（不再是只有背景变）",
+   "【卡片】默认经典皮肤保留浅粉→浅紫→浅蓝渐变+主题色文字；切换主题后卡片跟随主题色系",
+   "【底部导航】选中高亮色跟随主题主色",
+   "【工具箱/设置页】标题与主色调跟随当前主题"
   ],
   "force": false,
-  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.1-1791031158.apk",
-  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.2.1-1791031158.apk"
+  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.2-1791033079.apk",
+  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.2.2-1791033079.apk"
  },
  "home": {
   "categories": [
