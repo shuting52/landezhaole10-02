@@ -156,10 +156,13 @@ class NavViewModel(
         viewModelScope.launch {
             refreshRemoteConfig()
         }
-        // 定期后台检测云端更新（每 5 秒轮询一次 GitHub API 直读），控制台点击「应用」后本体几乎零延迟感知并触发更新弹窗
+        // 定期后台检测云端更新：每 60 秒轮询一次 GitHub API 直读（v1.1.16：由 5 秒改为 60 秒——
+        // 匿名 API 配额 60 次/小时，5 秒轮询十几分钟即耗尽，之后被迫回退 CDN 镜像（jsDelivr 缓存最长 12 小时），
+        // 导致控制台改完内容后本体长时间不同步。60 秒轮询刚好吃满配额，始终走 API 直读保证实时）。
+        // 首次启动已立即拉取，后续每 60 秒增量同步；设置页另有人工「检查更新」可即时刷新。
         viewModelScope.launch {
             while (isActive) {
-                kotlinx.coroutines.delay(5_000L)
+                kotlinx.coroutines.delay(60_000L)
                 refreshRemoteConfig()
             }
         }
