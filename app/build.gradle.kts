@@ -56,8 +56,9 @@ android {
     // v1.1.15：恢复默认经典皮肤（修复白底绿字）· 底部 Tab 缩小 · 公告栏跑马灯稳定 ·
     // 删除墓碑实时同步 · Skill 大小写修正 · 工具箱新增起点集 18 工具
     // v1.1.16：欢迎弹窗只弹一次 · 工具箱内置 10 工具 · Skill Tab 恢复 FilterChip · icon 多源回退 · 轮询 60 秒实时同步
-    versionCode = 116
-    versionName = "1.1.16"
+    // v1.1.17：删除 v1.1.16 内置工具 · 经典皮肤核心 · 彩虹渐变卡片背景（首页/软件/Skill）· Skill icon 优化
+    versionCode = 117
+    versionName = "1.1.17"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
