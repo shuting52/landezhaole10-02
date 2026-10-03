@@ -54,7 +54,21 @@ object ThemePresetsRepository {
 
     val defaultTheme = shengshiTheme
 
-    // 经典皮肤保留可选；盛世华诞作为默认软件主题
+    // 经典皮肤（可选，保留供主题切换）
+    val classicTheme = ThemePreset(
+        id = "classic_default",
+        name = "经典皮肤",
+        style = "classic",
+        categoryName = "经典",
+        primaryColor = Color(0xFF2196F3),
+        secondaryColor = Color(0xFF42A5F5),
+        bgColor = Color(0xFFFAFAFA),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF212121),
+        atmosphereEffect = AtmosphereEffect.NONE
+    )
+
+    // 盛世华诞为默认软件主题；经典皮肤保留可选
     val allThemes: List<ThemePreset> = listOf(
         shengshiTheme,
         classicTheme
