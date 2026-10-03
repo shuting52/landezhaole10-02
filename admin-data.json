@@ -1,16 +1,17 @@
 {
  "version": {
-  "code": 123,
-  "name": "1.1.23",
+  "code": 124,
+  "name": "1.1.24",
   "changelog": [
-   "✨ v1.1.23 更新来啦～",
-   "【下载提速】更新包下载改为国内加速镜像优先（ghfast/ghproxy/jsdmir 等），不再卡在 8% 等超时，速度大幅提升",
-   "【控制台提速】控制台连接云端同样镜像优先 + 8 秒超时，不再半天没动静",
-   "【WiFi/流量识别】下载前自动识别当前网络：移动流量时提示流量消耗，WiFi 下畅快下载"
+   "✨ v1.1.24 更新来啦～",
+   "【货币转换】货币菜单可滚动，全球 50+ 国家/地区货币全部可选（不再截断）",
+   "【雨声助眠】细雨/雷雨/森林/夜晚音效重写更真实（雨幕颗粒感、鸟鸣扫频、蟋蟀节奏变化）",
+   "【生理期记录】周期看板升级为动态环形图（渐变流动弧 + 移动光点 + 呼吸动画），直观显示周期进度",
+   "【到账语音】提示音重做：多泛音叮咚 + 金属质感金币碰撞 + 混响尾音，TTS 音调更自然"
   ],
   "force": false,
-  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.23-1791027620.apk",
-  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.23-1791027620.apk"
+  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.24-1791028661.apk",
+  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.24-1791028661.apk"
  },
  "home": {
   "categories": [
