@@ -323,7 +323,7 @@ private fun ShengshiWaveSplashContent(
             Spacer(modifier = Modifier.height(26.dp))
 
             // 底部「加载中」文字 + 点点动画 + 副标语
-            val dotCount by remember { mutableIntStateOf(0) }
+            var dotCount by remember { mutableIntStateOf(0) }
             LaunchedEffect(Unit) {
                 while (true) {
                     dotCount = (dotCount + 1) % 4
@@ -444,6 +444,7 @@ private fun OrbitDots(angle: Float) {
  * 云端开屏分支（type=html / media，控制台可切换，保留）
  * ===================================================================== */
 
+@Composable
 private fun CloudSplashContent(
     splash: SplashDto,
     onDismiss: () -> Unit
