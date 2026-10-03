@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.data.local.db.UploadedResourceEntity
 import com.example.data.util.VideoCache
+import com.example.ui.components.RainbowSpinBackground
 import com.example.ui.components.SkillDetailDialog
 import com.example.ui.components.UTabRow
 
@@ -451,11 +452,19 @@ private fun SkillGridCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
-        // v1.1.14：Skill 排版修复——竖屏改横屏：预览缩略图在左、信息在右，宽度自适应屏宽
-        Row(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        // v1.1.17：彩虹旋转渐变卡片背景（Skill 技能库卡片——文字背后的背景）
+        Box {
+            RainbowSpinBackground(Modifier.fillMaxSize())
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.82f))
+            )
+            // v1.1.14：Skill 排版修复——竖屏改横屏：预览缩略图在左、信息在右，宽度自适应屏宽
+            Row(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
             // 左侧：预览缩略图（有预览图/视频展示缩略，否则渐变占位）
             Box(
                 modifier = Modifier
@@ -479,9 +488,17 @@ private fun SkillGridCard(
                     ),
                 contentAlignment = Alignment.Center
             ) {
+                // v1.1.17 修复优化 Skill icon：有预览图→图片；无预览图但配置了 iconUrl→显示图标；否则类型 emoji 徽标
                 if (res.previewUrl.isNotBlank()) {
                     coil.compose.AsyncImage(
                         model = res.previewUrl,
+                        contentDescription = res.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else if (res.iconUrl.isNotBlank()) {
+                    coil.compose.AsyncImage(
+                        model = res.iconUrl,
                         contentDescription = res.title,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
@@ -609,6 +626,7 @@ private fun SkillGridCard(
                     }
                 }
             }
+            }
         }
     }
 }
@@ -700,14 +718,22 @@ private fun SoftwareGridCard(
             .fillMaxWidth()
             .clickable { onCardClick() }
     ) {
-        // v1.8.7：横排呈现——图标在左、标题/描述/按钮在右，卡片更短更紧凑
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
-        ) {
-            // 左侧：自动识别的软件 icon（云端 icon 优先，多源 favicon 逐个回退，再回退文字徽标）
+        // v1.1.17：彩虹旋转渐变卡片背景（软件版块卡片——文字背后的背景）
+        Box {
+            RainbowSpinBackground(Modifier.fillMaxSize())
             Box(
-                modifier = Modifier.size(42.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.82f))
+            )
+            // v1.8.7：横排呈现——图标在左、标题/描述/按钮在右，卡片更短更紧凑
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
+            ) {
+                // 左侧：自动识别的软件 icon（云端 icon 优先，多源 favicon 逐个回退，再回退文字徽标）
+                Box(
+                    modifier = Modifier.size(42.dp),
                 contentAlignment = Alignment.Center
             ) {
                 if (iconSources.isNotBlank()) {
@@ -795,6 +821,7 @@ private fun SoftwareGridCard(
                         )
                     }
                 }
+            }
             }
         }
     }
