@@ -62,8 +62,9 @@ android {
     // v1.1.19：到账语音真实金币音+微信模拟 · 删除我的工具夹 · 车牌摇号全国城市+菜单栏 ·
     // 环境检测优化 · 新增雨声助眠/生理期记录/货币转换 · 修复白底绿字 · 页脚优化 · 底部Tab缩小贴合
     // v1.1.20：站点卡片改浅粉→浅紫→浅蓝静态渐变背景+黑色文字（移除彩虹旋转白覆盖）
-    versionCode = 120
-    versionName = "1.1.20"
+    // v1.1.21：修复渐变不生效——global.css 纯白背景触发 CUSTOM 时也改用渐变+黑字
+    versionCode = 121
+    versionName = "1.1.21"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

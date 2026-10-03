@@ -116,7 +116,9 @@ fun ResourceCard(
         CardStylePreset.NEO_BRUTALISM -> Color.Black
         CardStylePreset.RETRO_PIXEL -> Color(0xFFE94560)
         CardStylePreset.LUXURY_GOLD -> Color(0xFFD4AF37)
-        CardStylePreset.CUSTOM -> uiverse.customStyle?.textColor ?: Color.Black
+        // v1.1.20：CUSTOM 若仅为 global.css 纯白背景（非用户主动定制），文字用黑色；真正定制色仍尊重
+        CardStylePreset.CUSTOM -> if (uiverse.customStyle?.backgroundColor == Color.White) Color.Black
+            else (uiverse.customStyle?.textColor ?: Color.Black)
         // 默认风格：黑色文字（配合浅色渐变背景）
         else -> Color.Black
     }.let { if (cardCompStyle?.textColor != null) cardCompStyle.textColor else it }
@@ -124,7 +126,9 @@ fun ResourceCard(
     val descColor = when (uiverse.cardStyle) {
         CardStylePreset.CYBERPUNK -> Color(0xFF94A3B8)
         CardStylePreset.NEO_BRUTALISM -> Color(0xFF334155)
-        CardStylePreset.CUSTOM -> (uiverse.customStyle?.textColor ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = 0.75f)
+        // v1.1.20：CUSTOM 若仅为 global.css 纯白背景，描述用深灰（浅色渐变上可读）
+        CardStylePreset.CUSTOM -> if (uiverse.customStyle?.backgroundColor == Color.White) Color(0xFF37474F)
+            else (uiverse.customStyle?.textColor ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = 0.75f)
         // 默认风格：深灰色描述（浅色渐变背景上可读）
         else -> Color(0xFF37474F)
     }
@@ -143,14 +147,23 @@ fun ResourceCard(
             Brush.linearGradient(listOf(Color(0xFFFAF5FF), Color(0xFFF0FDF4)))
         )
         CardStylePreset.LUXURY_GOLD -> Modifier.background(Color(0xFF1A1A1A))
+        // v1.1.20：CUSTOM 若仅为 global.css 纯白背景（#ffffff，非用户主动定制），卡片用浅色渐变；真正定制色仍尊重
         CardStylePreset.CUSTOM -> {
             val custom = uiverse.customStyle
             val bgBrush = custom?.backgroundBrush
             val bgColor = custom?.backgroundColor
             when {
                 bgBrush != null -> Modifier.background(bgBrush)
-                bgColor != null -> Modifier.background(bgColor)
-                else -> Modifier.background(MaterialTheme.colorScheme.surface)
+                bgColor != null && bgColor != Color.White -> Modifier.background(bgColor)
+                else -> Modifier.background(
+                    Brush.linearGradient(
+                        listOf(
+                            Color(0xFFFFE4EC), // 浅粉
+                            Color(0xFFE9E4FF), // 浅紫
+                            Color(0xFFDCEBFF)  // 浅蓝
+                        )
+                    )
+                )
             }
         }
         // 默认风格：浅粉→浅紫→浅蓝 静态线性渐变背景
