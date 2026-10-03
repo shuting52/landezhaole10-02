@@ -116,15 +116,17 @@ fun ResourceCard(
         CardStylePreset.NEO_BRUTALISM -> Color.Black
         CardStylePreset.RETRO_PIXEL -> Color(0xFFE94560)
         CardStylePreset.LUXURY_GOLD -> Color(0xFFD4AF37)
-        CardStylePreset.CUSTOM -> uiverse.customStyle?.textColor ?: MaterialTheme.colorScheme.onSurface
-        else -> MaterialTheme.colorScheme.onSurface
+        CardStylePreset.CUSTOM -> uiverse.customStyle?.textColor ?: Color.Black
+        // 默认风格：黑色文字（配合浅色渐变背景）
+        else -> Color.Black
     }.let { if (cardCompStyle?.textColor != null) cardCompStyle.textColor else it }
 
     val descColor = when (uiverse.cardStyle) {
         CardStylePreset.CYBERPUNK -> Color(0xFF94A3B8)
         CardStylePreset.NEO_BRUTALISM -> Color(0xFF334155)
         CardStylePreset.CUSTOM -> (uiverse.customStyle?.textColor ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = 0.75f)
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
+        // 默认风格：深灰色描述（浅色渐变背景上可读）
+        else -> Color(0xFF37474F)
     }
 
     // v1.1.4 主题分支：组件定制覆盖（卡片背景/文字色由 componentThemes 决定时优先）
@@ -151,7 +153,16 @@ fun ResourceCard(
                 else -> Modifier.background(MaterialTheme.colorScheme.surface)
             }
         }
-        else -> Modifier.background(MaterialTheme.colorScheme.surface)
+        // 默认风格：浅粉→浅紫→浅蓝 静态线性渐变背景
+        else -> Modifier.background(
+            Brush.linearGradient(
+                listOf(
+                    Color(0xFFFFE4EC), // 浅粉
+                    Color(0xFFE9E4FF), // 浅紫
+                    Color(0xFFDCEBFF)  // 浅蓝
+                )
+            )
+        )
     }.let { if (compBg != null) it.then(Modifier.background(compBg)) else it }
 
     val cardBorderModifier: Modifier = when (uiverse.cardStyle) {
@@ -205,14 +216,7 @@ fun ResourceCard(
                 )
                 .padding(horizontal = 7.dp, vertical = 7.dp)
         ) {
-            // v1.1.17：彩虹旋转渐变卡片背景（文字背后的背景）——首页卡片专属，其它界面不呈现
-            RainbowSpinBackground(Modifier.fillMaxSize())
-            // 半透明白覆盖层：彩虹柔和透出，文字清晰可读
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.80f))
-            )
+            // 移除彩虹旋转背景与 80% 白覆盖层，改用静态浅色渐变背景（见 cardBgModifier default 分支）
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
