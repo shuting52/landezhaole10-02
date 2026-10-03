@@ -67,8 +67,9 @@ android {
     // v1.1.23：更新下载提速——国内镜像优先+超时缩短 · 控制台连接提速 · WiFi/流量识别下载
     // v1.1.24：工具箱优化——货币菜单可滚动选所有国家 · 雨声/森林/夜晚/雷雨更真实 ·
     // 生理期动态环形看板 · 到账语音音效重做（多泛音叮咚+金属金币+混响）
-    versionCode = 124
-    versionName = "1.1.24"
+    // v1.2.0：主题外观升级——11 款渐变颜色主题 + 10 款动态效果主题（手绘/贴纸/潮流/国庆/新拟物/Q版/极光/萤火/飘雪/细雨）
+    versionCode = 125
+    versionName = "1.2.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

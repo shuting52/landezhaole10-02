@@ -39,6 +39,9 @@ import com.example.ui.components.ComponentThemeResolver
 import com.example.ui.components.LocalComponentThemes
 import com.example.ui.uiverse.PatternStylePreset
 import com.example.ui.uiverse.UiKitPreset
+import com.example.ui.uiverse.DynamicEffectPreset
+import androidx.compose.runtime.Composable
+import kotlin.math.sin
 
 // Uiverse.io Warm Peach Wind Gradient Palette
 val WindPeach1 = Color(0xFFFEC195)
@@ -61,6 +64,9 @@ fun GlobalWindBackground(
     // 主题切换优化——背景跟随软件背景（主题背景色）同步
     themeBgColor: Color? = null,
     themePrimaryColor: Color? = null,
+    // v1.2.0：渐变主题背景 + 动态效果主题
+    themeGradientColors: List<Color> = emptyList(),
+    dynamicEffect: DynamicEffectPreset = DynamicEffectPreset.NONE,
     content: @Composable BoxScope.() -> Unit
 ) {
     val uiverse = LocalUiverseState.current
@@ -121,6 +127,31 @@ fun GlobalWindBackground(
     Box(modifier = modifier.fillMaxSize()) {
         // ========== 1. 底层动态全屏画布：渲染多层悬浮流动胶囊与微光粒子群 ==========
         when {
+            // v1.2.0：动态效果主题优先（可叠加在任意主题上）
+            dynamicEffect != DynamicEffectPreset.NONE -> {
+                DynamicEffectBackground(
+                    effect = dynamicEffect,
+                    baseColor = themeBgColor ?: Color(0xFFFFF7EC),
+                    accent = activePrimary,
+                    windShift = windShift,
+                    slay1Angle = slay1Angle,
+                    slay2Angle = slay2Angle,
+                    glowPulse = glowPulse,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            // v1.2.0：渐变颜色主题（柔和渐变背景）
+            themeGradientColors.size >= 2 -> {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    drawRect(
+                        brush = Brush.linearGradient(
+                            colors = listOf(themeGradientColors[0], themeGradientColors[1]),
+                            start = Offset.Zero,
+                            end = Offset(size.width, size.height)
+                        )
+                    )
+                }
+            }
             uiverse.patternStyle == PatternStylePreset.CYBER_GRID || uiverse.activeKit == UiKitPreset.CYBERPUNK_NEON -> {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     drawRect(Color(0xFF070913))
@@ -636,6 +667,204 @@ private fun DrawScope.drawCapsule(
                 cornerRadius = cornerRadius,
                 style = style
             )
+        }
+    }
+}
+
+/**
+ * v1.2.0：动态效果主题背景（Canvas 动画，可叠加在任意颜色/渐变主题上）
+ * 手绘风 / 贴纸风 / 潮流风 / 国庆风 / 新拟物风 / Q版卡通 / 极光 / 萤火 / 飘雪 / 细雨
+ */
+@Composable
+private fun DynamicEffectBackground(
+    effect: DynamicEffectPreset,
+    baseColor: Color,
+    accent: Color,
+    windShift: Float,
+    slay1Angle: Float,
+    slay2Angle: Float,
+    glowPulse: Float,
+    modifier: Modifier = Modifier
+) {
+    Canvas(modifier = modifier) {
+        when (effect) {
+            DynamicEffectPreset.HAND_DRAWN -> {
+                // 手绘风：奶油底 + 手绘波浪线 + 涂鸦小圆点
+                drawRect(Color(0xFFFFF8E7))
+                val waveColor = Color(0xFF8B6F47).copy(alpha = 0.35f)
+                for (row in 0..5) {
+                    val y = size.height * (0.1f + row * 0.17f) + windShift * 12f
+                    var x = 0f
+                    var up = true
+                    while (x < size.width) {
+                        val y2 = y + (if (up) 1 else -1) * (14f + slay1Angle * 0.6f)
+                        drawLine(waveColor, Offset(x, y), Offset(x + 28f, y2), strokeWidth = 2f)
+                        up = !up
+                        x += 28f
+                    }
+                }
+                // 涂鸦圆点
+                repeat(14) { i ->
+                    val px = (i * 97 % 1000) / 1000f * size.width
+                    val py = (i * 53 % 1000) / 1000f * size.height + windShift * 6f
+                    drawCircle(accent.copy(alpha = 0.18f), radius = 5.dp.toPx(), center = Offset(px, py))
+                }
+            }
+            DynamicEffectPreset.STICKER -> {
+                // 贴纸风：淡彩底 + 漂浮贴纸圆/星/心
+                drawRect(Color(0xFFFDF3F8))
+                repeat(12) { i ->
+                    val px = (i * 131 % 1000) / 1000f * size.width + windShift * 20f
+                    val py = (i * 73 % 1000) / 1000f * size.height + slay2Angle * 2f
+                    val r = (8 + (i % 3) * 5).dp.toPx()
+                    when (i % 3) {
+                        0 -> drawCircle(Color(0xFFFF9ECD).copy(alpha = 0.35f), r, Offset(px, py))
+                        1 -> drawCircle(Color(0xFF7ED9F7).copy(alpha = 0.30f), r, Offset(px, py))
+                        else -> {
+                            // 简单四角星
+                            drawCircle(Color(0xFFFFD54F).copy(alpha = 0.40f), r * 0.6f, Offset(px, py))
+                        }
+                    }
+                }
+            }
+            DynamicEffectPreset.TRENDY -> {
+                // 潮流风：对角撞色斜条 + 渐变
+                drawRect(
+                    brush = Brush.linearGradient(
+                        listOf(Color(0xFFFFE9F3), Color(0xFFE7F6FF)),
+                        start = Offset.Zero, end = Offset(size.width, size.height)
+                    )
+                )
+                val stripe = Color(0xFF7C4DFF).copy(alpha = 0.08f)
+                for (i in -4..10) {
+                    val x = i * 90.dp.toPx() - windShift * 40f
+                    drawLine(
+                        stripe,
+                        Offset(x, 0f),
+                        Offset(x + size.height * 0.5f, size.height),
+                        strokeWidth = 26.dp.toPx()
+                    )
+                }
+                // 撞色圆
+                drawCircle(Color(0xFFFF6A88).copy(alpha = 0.22f), 60.dp.toPx() * glowPulse, Offset(size.width * 0.8f, size.height * 0.2f))
+                drawCircle(Color(0xFF00B4D8).copy(alpha = 0.20f), 40.dp.toPx(), Offset(size.width * 0.15f, size.height * 0.8f))
+            }
+            DynamicEffectPreset.NATIONAL_DAY -> {
+                // 国庆风：红金渐变 + 五角星 + 飘带
+                drawRect(
+                    brush = Brush.linearGradient(
+                        listOf(Color(0xFFDE2910).copy(alpha = 0.85f), Color(0xFFB71C1C).copy(alpha = 0.9f), Color(0xFFE8A200)),
+                        start = Offset.Zero, end = Offset(size.width, size.height)
+                    )
+                )
+                // 五角星（简化圆点金光）
+                repeat(10) { i ->
+                    val px = (i * 61 % 1000) / 1000f * size.width
+                    val py = (i * 37 % 1000) / 1000f * size.height + windShift * 10f
+                    drawCircle(Color(0xFFFFD700).copy(alpha = 0.65f), (4 + i % 3).dp.toPx(), Offset(px, py))
+                }
+                drawCircle(Color(0xFFFFD700).copy(alpha = 0.35f), 70.dp.toPx() * glowPulse, Offset(size.width / 2f, size.height * 0.28f))
+            }
+            DynamicEffectPreset.NEUMORPHIC -> {
+                // 新拟物风：浅灰底 + 柔和双阴影圆
+                drawRect(Color(0xFFE4E9F0))
+                val shadow1 = Color(0xFFC5CDD9).copy(alpha = 0.55f)
+                val shadow2 = Color.White.copy(alpha = 0.7f)
+                repeat(8) { i ->
+                    val px = (i * 131 % 1000) / 1000f * size.width + windShift * 14f
+                    val py = (i * 71 % 1000) / 1000f * size.height
+                    val r = (22 + (i % 3) * 10).dp.toPx()
+                    drawCircle(shadow1, r, Offset(px + 6.dp.toPx(), py + 6.dp.toPx()))
+                    drawCircle(shadow2, r, Offset(px - 6.dp.toPx(), py - 6.dp.toPx()))
+                    drawCircle(Color(0xFFF4F7FB), r * 0.9f, Offset(px, py))
+                }
+            }
+            DynamicEffectPreset.Q_CARTOON -> {
+                // Q版卡通风：糖果色底 + 漂浮圆点气泡
+                drawRect(
+                    brush = Brush.linearGradient(
+                        listOf(Color(0xFFFFF3E0), Color(0xFFE8F6FF)),
+                        start = Offset.Zero, end = Offset(size.width, size.height)
+                    )
+                )
+                val bubbleColors = listOf(
+                    Color(0xFFFFB3C1).copy(alpha = 0.35f),
+                    Color(0xFFBDE0FE).copy(alpha = 0.35f),
+                    Color(0xFFFFE5B4).copy(alpha = 0.35f),
+                    Color(0xFFB8F2E6).copy(alpha = 0.35f)
+                )
+                repeat(16) { i ->
+                    val px = (i * 89 % 1000) / 1000f * size.width + windShift * 24f
+                    val py = (i * 47 % 1000) / 1000f * size.height + slay2Angle * 3f
+                    val r = (6 + (i % 4) * 4).dp.toPx()
+                    drawCircle(bubbleColors[i % 4], r, Offset(px, py))
+                }
+            }
+            DynamicEffectPreset.AURORA -> {
+                // 极光：深色底 + 绿色/紫色极光波浪
+                drawRect(Color(0xFF0B1026))
+                val auroraColors = listOf(Color(0xFF00FF87).copy(alpha = 0.30f), Color(0xFF60EFFF).copy(alpha = 0.22f), Color(0xFF8F00FF).copy(alpha = 0.25f))
+                repeat(3) { layer ->
+                    val c = auroraColors[layer]
+                    val baseY = size.height * (0.25f + layer * 0.18f) + windShift * 20f * (layer + 1)
+                    var prev = Offset(-10f, baseY)
+                    var x = 0f
+                    while (x <= size.width + 10f) {
+                        val y = baseY + sin(x / 90f + layer * 2f) * 24f + slay1Angle * 1.5f
+                        drawLine(c, prev, Offset(x, y), strokeWidth = (30 + layer * 18).dp.toPx())
+                        prev = Offset(x, y)
+                        x += 12f
+                    }
+                }
+                // 星星
+                repeat(20) { i ->
+                    val px = (i * 37 % 1000) / 1000f * size.width
+                    val py = (i * 83 % 1000) / 1000f * size.height * 0.5f
+                    drawCircle(Color.White.copy(alpha = 0.4f), 1.2.dp.toPx(), Offset(px, py))
+                }
+            }
+            DynamicEffectPreset.FIREFLY -> {
+                // 萤火：深色底 + 漂浮光点（呼吸）
+                drawRect(Color(0xFF101C14))
+                repeat(22) { i ->
+                    val px = (i * 71 % 1000) / 1000f * size.width + windShift * 30f
+                    val py = (i * 43 % 1000) / 1000f * size.height + slay1Angle * 4f
+                    val r = (2 + (i % 3) * 1.5f).dp.toPx() * glowPulse
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            listOf(Color(0xFFFFE57F).copy(alpha = 0.85f), Color(0xFFFFE57F).copy(alpha = 0f)),
+                            center = Offset(px, py),
+                            radius = r * 3f
+                        ),
+                        radius = r,
+                        center = Offset(px, py)
+                    )
+                }
+            }
+            DynamicEffectPreset.SNOW -> {
+                // 飘雪：浅蓝底 + 飘落雪花
+                drawRect(Color(0xFFF0F8FF))
+                repeat(18) { i ->
+                    val px = ((i * 53 % 1000) / 1000f * size.width + windShift * 40f) % size.width
+                    val py = ((i * 29 % 1000) / 1000f * size.height + windShift * size.height * 0.3f) % size.height
+                    val r = (2 + (i % 3)).dp.toPx()
+                    drawCircle(Color.White.copy(alpha = 0.9f), r, Offset(px, py))
+                    drawCircle(Color(0xFFB3D9F5).copy(alpha = 0.5f), r * 1.8f, Offset(px, py), style = Stroke(width = 1.dp.toPx()))
+                }
+            }
+            DynamicEffectPreset.DRIZZLE -> {
+                // 细雨：浅灰底 + 斜雨丝
+                drawRect(Color(0xFFF2F5F8))
+                val drop = Color(0xFF7FB2E5).copy(alpha = 0.45f)
+                repeat(30) { i ->
+                    val px = ((i * 79 % 1000) / 1000f * size.width + windShift * 60f) % size.width
+                    val py = ((i * 41 % 1000) / 1000f * size.height + windShift * size.height * 0.35f) % size.height
+                    drawLine(drop, Offset(px, py), Offset(px - 5.dp.toPx(), py + 14.dp.toPx()), strokeWidth = 1.5.dp.toPx())
+                }
+            }
+            DynamicEffectPreset.NONE -> {
+                drawRect(baseColor)
+            }
         }
     }
 }

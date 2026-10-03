@@ -48,6 +48,7 @@ import com.example.ui.uiverse.ButtonStylePreset
 import com.example.ui.uiverse.InputStylePreset
 import com.example.ui.uiverse.LoaderStylePreset
 import com.example.ui.uiverse.PatternStylePreset
+import com.example.ui.uiverse.DynamicEffectPreset
 import java.util.UUID
 
 enum class AppBottomTab(val title: String) {
@@ -62,6 +63,8 @@ data class NavUiState(
     val currentTab: AppBottomTab = AppBottomTab.HOME,
     val currentTheme: ThemePreset = ThemePresetsRepository.defaultTheme,
     val atmosphereEffect: AtmosphereEffect = AtmosphereEffect.NONE,
+    // v1.2.0：动态效果主题
+    val dynamicEffect: DynamicEffectPreset = DynamicEffectPreset.NONE,
     val isThemeDialogVisible: Boolean = false,
     val activeUiverseState: ActiveUiverseState = ActiveUiverseState(),
     val categories: List<NavCategory> = NavData.categories,
@@ -467,6 +470,11 @@ class NavViewModel(
 
     fun setAtmosphereEffect(effect: AtmosphereEffect) {
         _uiState.value = _uiState.value.copy(atmosphereEffect = effect)
+    }
+
+    // v1.2.0：应用动态效果主题
+    fun setDynamicEffect(effect: DynamicEffectPreset) {
+        _uiState.value = _uiState.value.copy(dynamicEffect = effect)
     }
 
     fun setThemeDialogVisible(visible: Boolean) {

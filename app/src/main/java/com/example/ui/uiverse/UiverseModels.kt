@@ -266,6 +266,24 @@ enum class PatternStylePreset {
 }
 
 /**
+ * v1.2.0：动态效果主题（背景氛围动态效果，可叠加在任意颜色/渐变主题上）
+ * 手绘风 / 贴纸风 / 潮流风 / 国庆风 / 新拟物风 / Q版卡通风 / 极光 / 萤火 / 飘雪 / 细雨
+ */
+enum class DynamicEffectPreset(val displayName: String) {
+    NONE("无效果"),
+    HAND_DRAWN("手绘风"),
+    STICKER("贴纸风"),
+    TRENDY("潮流风"),
+    NATIONAL_DAY("国庆风"),
+    NEUMORPHIC("新拟物风"),
+    Q_CARTOON("Q版卡通"),
+    AURORA("极光"),
+    FIREFLY("萤火"),
+    SNOW("飘雪"),
+    DRIZZLE("细雨")
+}
+
+/**
  * Parsed dynamic style from user's custom CSS/HTML input
  */
 data class ParsedCssStyle(

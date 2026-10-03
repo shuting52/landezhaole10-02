@@ -86,6 +86,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.ui.theme.ThemePreset
+import com.example.ui.theme.ThemePresetsRepository
+import com.example.ui.uiverse.DynamicEffectPreset
 
 @Composable
 fun UiverseDialog(
@@ -102,7 +105,12 @@ fun UiverseDialog(
     localBgMediaType: String = "none",
     onPickLocalImage: () -> Unit = {},
     onPickLocalVideo: () -> Unit = {},
-    onClearLocalBgMedia: () -> Unit = {}
+    onClearLocalBgMedia: () -> Unit = {},
+    // v1.2.0：渐变色主题 / 动态效果主题切换
+    onApplyGradientTheme: (ThemePreset) -> Unit = {},
+    onApplyDynamicEffect: (DynamicEffectPreset) -> Unit = {},
+    activeGradientThemeId: String = "",
+    activeDynamicEffect: DynamicEffectPreset = DynamicEffectPreset.NONE
 ) {
     if (!isOpen) return
 
@@ -216,18 +224,42 @@ fun UiverseDialog(
                     }
                 }
 
-                // Body content：仅自定义背景（本机选择图片/视频，全局应用，跨重启持久）
+                // Body content：渐变色主题 + 动态效果 + 自定义背景（本机选择图片/视频，全局应用，跨重启持久）
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f)
                 ) {
-                    BackgroundMediaSection(
-                        localBgMediaType = localBgMediaType,
-                        onPickImage = onPickLocalImage,
-                        onPickVideo = onPickLocalVideo,
-                        onClear = onClearLocalBgMedia
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = 12.dp)
+                    ) {
+                        // v1.2.0：10+ 款渐变颜色主题
+                        GradientThemeSection(
+                            activeThemeId = activeGradientThemeId,
+                            onSelect = { t ->
+                                onApplyGradientTheme(t)
+                                Toast.makeText(context, "已应用渐变主题「${t.name}」", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                        // v1.2.0：10 款动态效果主题
+                        DynamicEffectSection(
+                            activeEffect = activeDynamicEffect,
+                            onSelect = { e ->
+                                onApplyDynamicEffect(e)
+                                Toast.makeText(context, "已应用动态效果「${e.displayName}」", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                        // 原有：自定义背景（本机图片/视频）
+                        BackgroundMediaSection(
+                            localBgMediaType = localBgMediaType,
+                            onPickImage = onPickLocalImage,
+                            onPickVideo = onPickLocalVideo,
+                            onClear = onClearLocalBgMedia
+                        )
+                    }
                 }
             }
         }
@@ -1203,6 +1235,114 @@ private fun ComponentThemeSection(
 // 自定义背景：本机直接选择图片/视频作为全局背景（跨重启持久、全局应用）
 // ==========================================
 @Composable
+/**
+ * v1.2.0：渐变色主题选择（10+ 款柔和渐变，点击一键切换）
+ */
+@Composable
+private fun GradientThemeSection(
+    activeThemeId: String,
+    onSelect: (ThemePreset) -> Unit
+) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+        Text("渐变颜色主题", color = Color(0xFF94A3B8), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(ThemePresetsRepository.gradientThemes) { t ->
+                val isActive = t.id == activeThemeId
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            Brush.linearGradient(
+                                if (t.gradientColors.size >= 2) t.gradientColors
+                                else listOf(t.primaryColor, t.secondaryColor)
+                            )
+                        )
+                        .clickable { onSelect(t) }
+                        .padding(vertical = 10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        t.name,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = t.textColor,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (isActive) {
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Icon(Icons.Filled.Check, contentDescription = null, tint = t.textColor, modifier = Modifier.size(12.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * v1.2.0：动态效果主题选择（10 款，点击一键切换）
+ */
+@Composable
+private fun DynamicEffectSection(
+    activeEffect: DynamicEffectPreset,
+    onSelect: (DynamicEffectPreset) -> Unit
+) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Text("动态效果主题", color = Color(0xFF94A3B8), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(DynamicEffectPreset.values().toList()) { e ->
+                val isActive = e == activeEffect
+                val colors = when (e) {
+                    DynamicEffectPreset.HAND_DRAWN -> listOf(Color(0xFFFFF0E0), Color(0xFFFFE8CC))
+                    DynamicEffectPreset.STICKER -> listOf(Color(0xFFFFE4F0), Color(0xFFFFD6E8))
+                    DynamicEffectPreset.TRENDY -> listOf(Color(0xFFE6E0FF), Color(0xFFDCEBFF))
+                    DynamicEffectPreset.NATIONAL_DAY -> listOf(Color(0xFFFFD9D0), Color(0xFFFFE5B8))
+                    DynamicEffectPreset.NEUMORPHIC -> listOf(Color(0xFFE8EDF3), Color(0xFFDFE6EF))
+                    DynamicEffectPreset.Q_CARTOON -> listOf(Color(0xFFFFF0D6), Color(0xFFE6F6FF))
+                    DynamicEffectPreset.AURORA -> listOf(Color(0xFF10233F), Color(0xFF16284A))
+                    DynamicEffectPreset.FIREFLY -> listOf(Color(0xFF12241B), Color(0xFF1A3226))
+                    DynamicEffectPreset.SNOW -> listOf(Color(0xFFEAF4FF), Color(0xFFDEEEFF))
+                    DynamicEffectPreset.DRIZZLE -> listOf(Color(0xFFE8EEF4), Color(0xFFDDE6EF))
+                    DynamicEffectPreset.NONE -> listOf(Color(0xFFF5F5F5), Color(0xFFEEEEEE))
+                }
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Brush.linearGradient(colors))
+                        .clickable { onSelect(e) }
+                        .padding(vertical = 10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        e.displayName,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (e == DynamicEffectPreset.AURORA || e == DynamicEffectPreset.FIREFLY) Color.White else Color(0xFF3A3A4A),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (isActive) {
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Icon(Icons.Filled.Check, contentDescription = null, tint = if (e == DynamicEffectPreset.AURORA || e == DynamicEffectPreset.FIREFLY) Color.White else Color(0xFF3A3A4A), modifier = Modifier.size(12.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
 private fun BackgroundMediaSection(
     localBgMediaType: String = "none",
     onPickImage: () -> Unit,

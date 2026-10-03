@@ -216,7 +216,10 @@ fun MainScreen(
             bgMediaUrl = bgUrl,
             // v1.0.4：主题切换优化——背景跟随软件背景（主题背景色）同步
             themeBgColor = uiState.currentTheme.bgColor,
-            themePrimaryColor = uiState.currentTheme.primaryColor
+            themePrimaryColor = uiState.currentTheme.primaryColor,
+            // v1.2.0：渐变主题背景 + 动态效果主题
+            themeGradientColors = uiState.currentTheme.gradientColors,
+            dynamicEffect = uiState.dynamicEffect
         ) {
             // v1.8.7：背景媒体（图片/视频）激活时，全局白色 background/surface 自动转为半透明磨砂，
             // 让背景透出（设置页、卡片、各 Tab 均生效）；无背景媒体时保持原样
@@ -811,6 +814,17 @@ fun MainScreen(
                 onApplyComponentTheme = { compId, css ->
                     viewModel.applyComponentTheme(compId, css)
                 },
+                // v1.2.0：渐变主题 + 动态效果切换
+                onApplyGradientTheme = { t ->
+                    viewModel.setTheme(t)
+                    viewModel.setThemeDialogVisible(false)
+                },
+                onApplyDynamicEffect = { e ->
+                    viewModel.setDynamicEffect(e)
+                    viewModel.setThemeDialogVisible(false)
+                },
+                activeGradientThemeId = uiState.currentTheme.id,
+                activeDynamicEffect = uiState.dynamicEffect,
                 componentThemes = uiState.activeUiverseState.componentThemes,
                 localBgMediaType = uiState.localBgMediaType,
                 onPickLocalImage = {
