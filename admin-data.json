@@ -1,20 +1,13 @@
 {
   "version": {
-    "code": 127,
-    "name": "1.2.2",
+    "code": 128,
+    "name": "1.2.3",
     "changelog": [
-      "【23:02】更新Skill「猫咪和小主人」",
-      "【23:02】更新Skill「音乐节海报专业版」",
-      "【23:02】更新Skill「音乐节海报专业版」",
-      "【23:01】更新Skill「变装带货」",
-      "【22:59】更新软件「豆包去水印」",
-      "【22:57】新增Skill「变装带货」",
-      "【22:56】新增Skill「猫咪和小主人」",
-      "【22:53】更新Skill「音乐节海报专业版」",
-      "【22:53】新增Skill「音乐节海报专业版」",
-      "【22:51】新增软件「豆包去水印」",
-      "【22:49】删除Skill「僵尸女友」",
-      "【22:49】删除Skill「卡点变装」"
+      "✨ v1.2.3 更新来啦～",
+      "【控制台】UI 全面升级：新增数据看板（分类/站点/软件/Skill 统计）、本体版本跟随检测状态条、自动跟随开关（60秒检测本体云端更新）、一键拉取本体最新内容",
+      "【控制台】软件版块/提示词版块/Skill 版块新增「自定义上传 icon 图标」功能，上传即自动填充，实时同步本体",
+      "【本体】新增功能键：按手机返回键即可关闭独立弹窗（不再局限于点击取消按钮）",
+      "【控制台】控制台跟随检测本体更新的内容，编辑即应用实时同步到本体"
     ],
     "force": false,
     "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.2-1791033079.apk",
@@ -23056,8 +23049,8 @@
     "segments": []
   },
   "console": {
-    "version": "1.0.20",
-    "code": 45,
+    "version": "1.0.21",
+    "code": 46,
     "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/console/console-apk-v1.0.20-1791029923.apk"
   },
   "ipMonitor": {
