@@ -3,6 +3,7 @@
     "code": 127,
     "name": "1.2.2",
     "changelog": [
+      "【22:56】新增Skill「猫咪和小主人」",
       "【22:53】更新Skill「音乐节海报专业版」",
       "【22:53】新增Skill「音乐节海报专业版」",
       "【22:51】新增软件「豆包去水印」",
@@ -13,8 +14,7 @@
       "【22:49】删除Skill「Clean Architecture 架构设计指南」",
       "【22:49】删除Skill「生日祝福Skill」",
       "【22:48】删除Skill「夏林果真人IP封面」",
-      "【22:47】删除软件「PotPlayer 64bit 绿色优化版」",
-      "【22:44】删除Skill「系统桌面趣味视频」"
+      "【22:47】删除软件「PotPlayer 64bit 绿色优化版」"
     ],
     "force": false,
     "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.2-1791033079.apk",
@@ -22927,6 +22927,22 @@
       "mediaUrl": "",
       "iconUrl": "",
       "mode": "file"
+    },
+    {
+      "id": "sk_musin9466g71",
+      "type": "skill",
+      "promptType": "skill",
+      "title": "变装带货",
+      "desc": "变装带货Skill",
+      "prompt": "",
+      "url": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/uploads/1791039427036_变装带货.zip",
+      "author": "懒得找了",
+      "badge": "",
+      "tags": "技能 资源包 ZIP",
+      "previewUrl": "",
+      "mediaUrl": "",
+      "iconUrl": "",
+      "mode": "file"
     }
   ],
   "settings": {
@@ -23001,6 +23017,7 @@
   "updateDialog": {
     "title": "懒得找了 v1.1.4 已上线",
     "changelog": [
+      "【22:56】新增Skill「猫咪和小主人」",
       "【22:53】更新Skill「音乐节海报专业版」",
       "【22:53】新增Skill「音乐节海报专业版」",
       "【22:51】新增软件「豆包去水印」",
@@ -23011,8 +23028,7 @@
       "【22:49】删除Skill「Clean Architecture 架构设计指南」",
       "【22:49】删除Skill「生日祝福Skill」",
       "【22:48】删除Skill「夏林果真人IP封面」",
-      "【22:47】删除软件「PotPlayer 64bit 绿色优化版」",
-      "【22:44】删除Skill「系统桌面趣味视频」"
+      "【22:47】删除软件「PotPlayer 64bit 绿色优化版」"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
