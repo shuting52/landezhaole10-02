@@ -80,6 +80,7 @@ import com.example.ui.components.UiversePink
 import com.example.ui.components.UiverseTextMuted
 import com.example.ui.components.UiverseTrack
 import com.example.ui.components.neoShadow
+import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.screens.toolbox.ColdJokeSection
 import com.example.ui.screens.toolbox.CurrencySection
 import com.example.ui.screens.toolbox.EmergencyPhoneSection
@@ -208,10 +209,11 @@ fun ToolboxScreen(
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .testTag("toolbox_screen")
         ) {
-            // 顶部标题区（国潮红金盛世风格）
+            // 顶部标题区（v1.2.2：颜色跟随当前主题——主色/边框/文字同步变化）
+            val themeUi = LocalThemeUiColors.current
             Surface(
-                color = Color(0xFFFFFDF9).copy(alpha = 0.88f),
-                border = BorderStroke(1.5.dp, Color(0xFFFFD700).copy(alpha = 0.70f)),
+                color = themeUi.surface.copy(alpha = 0.9f),
+                border = BorderStroke(1.5.dp, themeUi.border),
                 shape = RoundedCornerShape(28.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -226,24 +228,24 @@ fun ToolboxScreen(
                                 text = "🏮 懒得找了百宝箱",
                                 fontSize = 17.sp,
                                 fontWeight = FontWeight.Black,
-                                color = Color(0xFFDE2910)
+                                color = themeUi.primary
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(4.dp))
-                                    .background(Color(0xFFDE2910))
-                                    .border(0.6.dp, Color(0xFFFFD700), RoundedCornerShape(4.dp))
+                                    .background(themeUi.primary)
+                                    .border(0.6.dp, themeUi.secondary, RoundedCornerShape(4.dp))
                                     .padding(horizontal = 4.dp, vertical = 1.dp)
                             ) {
-                                Text("国庆特辑", color = Color(0xFFFFD700), fontSize = 8.5.sp, fontWeight = FontWeight.Bold)
+                                Text("精选工具", color = themeUi.secondary, fontSize = 8.5.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = "传世锦囊 · 华夏时令 · 离线神兵 · 纯净实用",
                             fontSize = 11.sp,
-                            color = Color(0xFF7A4A45)
+                            color = themeUi.textMuted
                         )
                     }
                 }

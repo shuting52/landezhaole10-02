@@ -53,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.data.model.NavCard
 import com.example.ui.theme.FlameRed
+import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.LocalUiverseState
 import com.example.ui.theme.SunsetOrange
 import com.example.ui.uiverse.CardStylePreset
@@ -70,6 +71,8 @@ fun ResourceCard(
     componentThemes: Map<String, String> = emptyMap()
 ) {
     val uiverse = LocalUiverseState.current
+    // v1.2.2：主题 UI 色板——卡片背景/文字/边框跟随当前主题（默认经典=浅粉浅紫浅蓝，切主题后跟随主题色）
+    val themeUi = LocalThemeUiColors.current
 
     // v1.1.4：若用户在主题切换中定制了「站点卡片」组件，则覆盖默认 cardStyle
     val cardCompStyle = ComponentThemeResolver.resolve(componentThemes, "card_item")
@@ -116,21 +119,21 @@ fun ResourceCard(
         CardStylePreset.NEO_BRUTALISM -> Color.Black
         CardStylePreset.RETRO_PIXEL -> Color(0xFFE94560)
         CardStylePreset.LUXURY_GOLD -> Color(0xFFD4AF37)
-        // v1.1.20：CUSTOM 若仅为 global.css 纯白背景（非用户主动定制），文字用黑色；真正定制色仍尊重
-        CardStylePreset.CUSTOM -> if (uiverse.customStyle?.backgroundColor == Color.White) Color.Black
-            else (uiverse.customStyle?.textColor ?: Color.Black)
-        // 默认风格：黑色文字（配合浅色渐变背景）
-        else -> Color.Black
+        // v1.2.2：CUSTOM 若仅为 global.css 纯白背景，文字用主题文字色；真正定制色仍尊重
+        CardStylePreset.CUSTOM -> if (uiverse.customStyle?.backgroundColor == Color.White) themeUi.text
+            else (uiverse.customStyle?.textColor ?: themeUi.text)
+        // 默认风格：主题文字色（配合主题卡片渐变）
+        else -> themeUi.text
     }.let { if (cardCompStyle?.textColor != null) cardCompStyle.textColor else it }
 
     val descColor = when (uiverse.cardStyle) {
         CardStylePreset.CYBERPUNK -> Color(0xFF94A3B8)
         CardStylePreset.NEO_BRUTALISM -> Color(0xFF334155)
-        // v1.1.20：CUSTOM 若仅为 global.css 纯白背景，描述用深灰（浅色渐变上可读）
-        CardStylePreset.CUSTOM -> if (uiverse.customStyle?.backgroundColor == Color.White) Color(0xFF37474F)
+        // v1.2.2：CUSTOM 纯白默认时描述用主题弱化文字色
+        CardStylePreset.CUSTOM -> if (uiverse.customStyle?.backgroundColor == Color.White) themeUi.textMuted
             else (uiverse.customStyle?.textColor ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = 0.75f)
-        // 默认风格：深灰色描述（浅色渐变背景上可读）
-        else -> Color(0xFF37474F)
+        // 默认风格：主题弱化文字色（浅色渐变上可读）
+        else -> themeUi.textMuted
     }
 
     // v1.1.4 主题分支：组件定制覆盖（卡片背景/文字色由 componentThemes 决定时优先）
@@ -147,7 +150,7 @@ fun ResourceCard(
             Brush.linearGradient(listOf(Color(0xFFFAF5FF), Color(0xFFF0FDF4)))
         )
         CardStylePreset.LUXURY_GOLD -> Modifier.background(Color(0xFF1A1A1A))
-        // v1.1.20：CUSTOM 若仅为 global.css 纯白背景（#ffffff，非用户主动定制），卡片用浅色渐变；真正定制色仍尊重
+        // v1.2.2：CUSTOM 若仅为 global.css 纯白背景，卡片用主题卡片渐变；真正定制色仍尊重
         CardStylePreset.CUSTOM -> {
             val custom = uiverse.customStyle
             val bgBrush = custom?.backgroundBrush
@@ -156,25 +159,17 @@ fun ResourceCard(
                 bgBrush != null -> Modifier.background(bgBrush)
                 bgColor != null && bgColor != Color.White -> Modifier.background(bgColor)
                 else -> Modifier.background(
-                    Brush.linearGradient(
-                        listOf(
-                            Color(0xFFFFE4EC), // 浅粉
-                            Color(0xFFE9E4FF), // 浅紫
-                            Color(0xFFDCEBFF)  // 浅蓝
-                        )
-                    )
+                    if (themeUi.cardGradient.size >= 2)
+                        Brush.linearGradient(themeUi.cardGradient)
+                    else Brush.linearGradient(listOf(themeUi.surface, themeUi.surface))
                 )
             }
         }
-        // 默认风格：浅粉→浅紫→浅蓝 静态线性渐变背景
+        // 默认风格：主题卡片渐变背景（跟随当前主题）
         else -> Modifier.background(
-            Brush.linearGradient(
-                listOf(
-                    Color(0xFFFFE4EC), // 浅粉
-                    Color(0xFFE9E4FF), // 浅紫
-                    Color(0xFFDCEBFF)  // 浅蓝
-                )
-            )
+            if (themeUi.cardGradient.size >= 2)
+                Brush.linearGradient(themeUi.cardGradient)
+            else Brush.linearGradient(listOf(themeUi.surface, themeUi.surface))
         )
     }.let { if (compBg != null) it.then(Modifier.background(compBg)) else it }
 
@@ -204,7 +199,8 @@ fun ResourceCard(
             val bWidth = custom?.borderWidth ?: 1.dp
             Modifier.border(bWidth, bColor, cardShape)
         }
-        else -> Modifier.border(1.2.dp, Color(0xFFFFD700).copy(alpha = 0.50f), cardShape)
+        // v1.2.2：默认边框也跟随主题主色
+        else -> Modifier.border(1.2.dp, themeUi.border, cardShape)
     }
 
     Box(

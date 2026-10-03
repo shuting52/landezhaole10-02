@@ -69,8 +69,9 @@ android {
     // 生理期动态环形看板 · 到账语音音效重做（多泛音叮咚+金属金币+混响）
     // v1.2.0：主题外观升级——11 款渐变颜色主题 + 10 款动态效果主题（手绘/贴纸/潮流/国庆/新拟物/Q版/极光/萤火/飘雪/细雨）
     // v1.2.1：修复主题外观闪退（滚动容器嵌套崩溃）· 移除到账语音/雨声助眠工具
-    versionCode = 126
-    versionName = "1.2.1"
+    // v1.2.2：UI 组件跟随主题——引入 ThemeUiColors 色板，卡片/底栏/工具箱/设置页头部切主题同步变色
+    versionCode = 127
+    versionName = "1.2.2"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

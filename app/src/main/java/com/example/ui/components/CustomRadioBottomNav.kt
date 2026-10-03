@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.viewmodel.AppBottomTab
+import com.example.ui.theme.LocalThemeUiColors
 
 /**
  * v1.1.12：底部 Tab 重写为 Uiverse Neo-Brutalism 样式（用户指定）：
@@ -46,6 +47,10 @@ fun CustomRadioBottomNav(
         AppBottomTab.TOOLBOX to "☰ 工具箱",
         AppBottomTab.SETTINGS to "⚙ 设置"
     )
+    // v1.2.2：底栏选中色跟随主题主色（切主题时底栏同步变色）
+    val themeUi = LocalThemeUiColors.current
+    val activeColor = themeUi.primary
+    val activeTextColor = if (themeUi.primary.luminance() > 0.55f) Color(0xFF1E2A38) else Color.White
 
     Box(
         modifier = modifier
@@ -60,7 +65,7 @@ fun CustomRadioBottomNav(
                 .neoShadow(
                     offsetX = 3.dp,
                     offsetY = 3.dp,
-                    shadowColor = UiverseBlue,
+                    shadowColor = activeColor,
                     borderColor = UiverseInk,
                     borderWidth = 2.dp,
                     shape = RoundedCornerShape(13.dp),
@@ -73,7 +78,7 @@ fun CustomRadioBottomNav(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .background(if (isSelected) UiverseBlue else Color.White)
+                        .background(if (isSelected) activeColor else Color.White)
                         .clickable { onTabSelected(tab) }
                         .padding(vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -83,13 +88,13 @@ fun CustomRadioBottomNav(
                     Text(
                         text = icon,
                         fontSize = 16.sp,
-                        color = if (isSelected) Color.White else UiverseTextMuted
+                        color = if (isSelected) activeTextColor else UiverseTextMuted
                     )
                     Text(
                         text = text,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (isSelected) Color.White else UiverseTextMuted
+                        color = if (isSelected) activeTextColor else UiverseTextMuted
                     )
                     if (isSelected) {
                         Spacer(modifier = Modifier.height(1.dp))

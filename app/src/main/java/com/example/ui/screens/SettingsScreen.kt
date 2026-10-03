@@ -113,6 +113,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.theme.CuteLemon
 import com.example.ui.theme.CutePeach
 import com.example.ui.theme.CutePink
+import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.ThemePreset
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -189,7 +190,8 @@ fun SettingsScreen(
                 )
                 .padding(if (settingsComp != null) 14.dp else 0.dp)
         ) {
-        // Header（v1.0.19：图标渐变跟随当前主题色，设置版块与软件主题同步）
+        // Header（v1.2.2：图标/标题颜色跟随当前主题色，设置版块与软件主题同步）
+        val themeUi = LocalThemeUiColors.current
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
@@ -198,12 +200,12 @@ fun SettingsScreen(
                     .background(
                         Brush.linearGradient(
                             listOf(
-                                Color(0xFFDE2910),
-                                Color(0xFFFFD700)
+                                themeUi.primary,
+                                themeUi.secondary
                             )
                         )
                     )
-                    .border(1.dp, Color(0xFFFFD700), RoundedCornerShape(12.dp)),
+                    .border(1.dp, themeUi.secondary, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -222,13 +224,13 @@ fun SettingsScreen(
                             fontWeight = FontWeight.Black,
                             fontSize = 18.sp
                         ),
-                        color = Color(0xFFDE2910)
+                        color = themeUi.primary
                     )
                 }
                 Text(
                     text = "官方结缘社群 · 国潮主题外观 · 协议条款与关于",
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
-                    color = Color(0xFF7A4A45)
+                    color = themeUi.textMuted
                 )
             }
         }
