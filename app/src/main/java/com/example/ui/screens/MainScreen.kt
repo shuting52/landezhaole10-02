@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -204,6 +205,27 @@ fun MainScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
+        // v1.3.0：按手机返回键能关闭独立弹窗（不再局限于点击取消按钮）。
+        // 仅拦截「普通可关闭弹窗」：强制弹窗（软件停运/强制更新）与开屏不受影响。
+        // 欢迎弹窗用返回键关闭时同步记录签名，避免关闭后立即重新弹出。
+        val welcomeSigForBack = (uiState.cloudWelcome?.title ?: "") + "|" + (uiState.cloudWelcome?.content ?: "") + "|" + (uiState.cloudWelcome?.welcomeText ?: "") + "|" + (uiState.cloudWelcome?.imageUrl ?: "")
+        val anyDismissableDialogOpen = showAddSiteDialog || showCategoryBottomSheet ||
+            (uiState.isCloudReady && !uiState.isSplashVisible && uiState.cloudWelcome?.enabled == true && dismissedWelcomeSig != welcomeSigForBack)
+        BackHandler(enabled = anyDismissableDialogOpen) {
+            when {
+                showAddSiteDialog -> showAddSiteDialog = false
+                showCategoryBottomSheet -> showCategoryBottomSheet = false
+                else -> {
+                    // 欢迎弹窗：关闭并持久化签名
+                    val sig = welcomeSigForBack
+                    try {
+                        context.getSharedPreferences("lzdz_welcome_prefs", Context.MODE_PRIVATE)
+                            .edit().putString("dismissed_welcome_sig", sig).apply()
+                    } catch (_: Exception) {}
+                    dismissedWelcomeSig = sig
+                }
+            }
+        }
         // 本地背景媒体优先（主题版块本机选择），无本地媒体时回退云端背景
         val bgType = uiState.localBgMediaType.ifBlank { "none" }.let {
             if (it != "none") it else (uiState.cloudSettings?.bgMedia?.type ?: "none")
