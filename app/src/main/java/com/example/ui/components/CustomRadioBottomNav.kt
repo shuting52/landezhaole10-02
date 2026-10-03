@@ -51,7 +51,7 @@ fun CustomRadioBottomNav(
         modifier = modifier
             .fillMaxWidth()
             .padding(WindowInsets.navigationBars.asPaddingValues())
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+            .padding(horizontal = 10.dp, vertical = 2.dp)
             .testTag("custom_radio_bottom_nav")
     ) {
         Row(
@@ -62,11 +62,11 @@ fun CustomRadioBottomNav(
                     offsetY = 4.dp,
                     shadowColor = UiverseBlue,
                     borderColor = UiverseInk,
-                    borderWidth = 3.dp,
-                    shape = RoundedCornerShape(18.dp),
+                    borderWidth = 2.5.dp,
+                    shape = RoundedCornerShape(16.dp),
                     backgroundColor = Color.White
                 )
-                .clip(RoundedCornerShape(18.dp))
+                .clip(RoundedCornerShape(16.dp))
         ) {
             items.forEachIndexed { index, (tab, pair) ->
                 val isSelected = selectedTab == tab
@@ -75,27 +75,27 @@ fun CustomRadioBottomNav(
                         .weight(1f)
                         .background(if (isSelected) UiverseBlue else Color.White)
                         .clickable { onTabSelected(tab) }
-                        .padding(vertical = 5.dp),
+                        .padding(vertical = 3.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     val text = pair.substringAfter(' ').ifBlank { pair }
                     val icon = pair.substringBefore(' ')
                     Text(
                         text = icon,
-                        fontSize = 15.sp,
+                        fontSize = 13.sp,
                         color = if (isSelected) Color.White else UiverseTextMuted
                     )
                     Text(
                         text = text,
-                        fontSize = 9.sp,
+                        fontSize = 8.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isSelected) Color.White else UiverseTextMuted
                     )
                     if (isSelected) {
-                        Spacer(modifier = Modifier.height(2.dp))
+                        Spacer(modifier = Modifier.height(1.dp))
                         Box(
                             modifier = Modifier
-                                .width(14.dp)
+                                .width(12.dp)
                                 .height(2.dp)
                                 .background(UiversePink, RoundedCornerShape(1.dp))
                         )
