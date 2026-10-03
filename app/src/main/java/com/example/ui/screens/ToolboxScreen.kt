@@ -80,7 +80,6 @@ import com.example.ui.components.UiversePink
 import com.example.ui.components.UiverseTextMuted
 import com.example.ui.components.UiverseTrack
 import com.example.ui.components.neoShadow
-import com.example.ui.screens.toolbox.AlipayVoiceSection
 import com.example.ui.screens.toolbox.ColdJokeSection
 import com.example.ui.screens.toolbox.CurrencySection
 import com.example.ui.screens.toolbox.EmergencyPhoneSection
@@ -90,7 +89,6 @@ import com.example.ui.screens.toolbox.LicensePlateSection
 import com.example.ui.screens.toolbox.MouthpieceSection
 import com.example.ui.screens.toolbox.OfflineTreasureSection
 import com.example.ui.screens.toolbox.PeriodSection
-import com.example.ui.screens.toolbox.RainSoundSection
 import com.example.ui.screens.toolbox.SpeedTestSection
 
 /**
@@ -134,12 +132,6 @@ enum class ToolboxTab(
         desc = "救援/道路/举报/法律 · 一键快捷呼出 · 全国通用守护平安"
     ),
     // ========== v1.1.18 新增工具 ==========
-    ALIPAY_VOICE(
-        title = "支付宝到账语音",
-        shortLabel = "到账语音",
-        icon = Icons.Filled.PlayArrow,
-        desc = "输入金额 · 生成到账播报 · 预览/播放语音"
-    ),
     LICENSE_PLATE(
         title = "车牌摇号 · 好运加持",
         shortLabel = "车牌摇号",
@@ -163,12 +155,6 @@ enum class ToolboxTab(
         shortLabel = "环境检测",
         icon = Icons.Filled.Public,
         desc = "IP 地址 · 地理位置 · 代理/VPN · 网络类型一键检测"
-    ),
-    RAIN_SOUND(
-        title = "雨声助眠 · 睡眠神器",
-        shortLabel = "雨声助眠",
-        icon = Icons.Filled.Cloud,
-        desc = "9种环境音效 · 自定义导入 · 定时 · 智能睡眠检测"
     ),
     PERIOD(
         title = "生理期记录 · 周期看板",
@@ -339,12 +325,10 @@ fun ToolboxScreen(
                                 ToolboxTab.FOOD_PICKER -> FoodPickerScreenView()
                                 ToolboxTab.EMERGENCY_PHONE -> EmergencyPhoneSection()
                                 // v1.1.18 新增
-                                ToolboxTab.ALIPAY_VOICE -> AlipayVoiceSection()
                                 ToolboxTab.LICENSE_PLATE -> LicensePlateSection()
                                 ToolboxTab.COLD_JOKE -> ColdJokeSection()
                                 ToolboxTab.SPEED_TEST -> SpeedTestSection()
                                 ToolboxTab.ENV_CHECK -> EnvCheckSection()
-                                ToolboxTab.RAIN_SOUND -> RainSoundSection()
                                 ToolboxTab.PERIOD -> PeriodSection()
                                 ToolboxTab.CURRENCY -> CurrencySection()
                             }

@@ -68,8 +68,9 @@ android {
     // v1.1.24：工具箱优化——货币菜单可滚动选所有国家 · 雨声/森林/夜晚/雷雨更真实 ·
     // 生理期动态环形看板 · 到账语音音效重做（多泛音叮咚+金属金币+混响）
     // v1.2.0：主题外观升级——11 款渐变颜色主题 + 10 款动态效果主题（手绘/贴纸/潮流/国庆/新拟物/Q版/极光/萤火/飘雪/细雨）
-    versionCode = 125
-    versionName = "1.2.0"
+    // v1.2.1：修复主题外观闪退（滚动容器嵌套崩溃）· 移除到账语音/雨声助眠工具
+    versionCode = 126
+    versionName = "1.2.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
