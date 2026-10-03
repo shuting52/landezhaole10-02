@@ -279,6 +279,15 @@ private fun ShengshiWaveSplashContent(
                 OrbitDots(angle = orbitAngle)
 
                 // 中心金色核心：「懒得找了」流光标题
+                val corePulse by rememberInfiniteTransition(label = "core_pulse").animateFloat(
+                    initialValue = 1f,
+                    targetValue = 1.12f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1500, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "corePulse"
+                )
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -292,15 +301,6 @@ private fun ShengshiWaveSplashContent(
                         )
                         .shadow(22.dp, CircleShape, ambientColor = SsGold, spotColor = SsGold)
                 ) {
-                    val corePulse by rememberInfiniteTransition(label = "core_pulse").animateFloat(
-                        initialValue = 1f,
-                        targetValue = 1.12f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(1500, easing = FastOutSlowInEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "corePulse"
-                    )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "懒得找了",
