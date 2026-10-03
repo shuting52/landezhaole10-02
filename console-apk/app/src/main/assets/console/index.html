@@ -117,6 +117,9 @@ nav button{flex:1;min-width:52px;background:none;border-radius:0;padding:8px 2px
 nav button.active{color:var(--pri);font-weight:800}
 nav .ico{font-size:17px}
 /* 底部固定操作栏（桌面端同款：任何页面都能直接“应用/发布/诊断”） */
+.hd-follow{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:8px 10px 0;padding:7px 12px;font-size:12px;align-items:center;gap:10px;box-shadow:3px 3px 8px var(--neu-dark),-3px -3px 8px var(--neu-light)}
+.hd-follow button{padding:3px 10px;font-size:11px;border-radius:8px}
+.hd-follow-opt{display:flex;align-items:center;gap:10px;margin:6px 10px 0;padding:0 4px;flex-wrap:wrap}
 .bottom-actions{position:fixed;bottom:56px;left:0;right:0;z-index:59;display:flex;gap:6px;padding:8px 10px;background:var(--bg);backdrop-filter:blur(14px);border-top:1px solid var(--line);box-shadow:0 -4px 12px var(--neu-dark33)}
 body[data-theme="dark"] .bottom-actions{background:#2a2e3d}
 .bottom-actions button{flex:1;min-width:0;padding:11px 6px;font-size:13px;border-radius:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:800}
@@ -132,6 +135,10 @@ main{padding:12px;max-width:960px;margin:0 auto}
 .card .hint{font-size:12px;color:var(--tx2)}
 /* list item */
 .item{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:10px}
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.dash-cell{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center;box-shadow:2px 2px 6px var(--neu-dark),-2px -2px 6px var(--neu-light)}
+.dash-cell b{display:block;font-size:20px;font-weight:900;color:var(--pri);margin-bottom:2px}
+.dash-cell span{font-size:11px;color:var(--tx2)}
 .item-head{display:flex;align-items:center;gap:8px}
 .item-title{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .badge{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;flex-shrink:0}
@@ -268,6 +275,17 @@ main{padding:12px;max-width:960px;margin:0 auto}
     <button class="pub-bump-btn" title="触发更新弹窗：递增版本号并发布，本体软件即刻弹出更新窗口" onclick="quickBumpPublish()">🚀 触发更新</button>
     <button class="pub-dis-btn" title="断开与仓库的连接（不会清除 Token，可随时重新连接）" onclick="disconnect()">⏻ 断开</button>
   </div>
+  <!-- v1.3.0 本体版本跟随检测状态条：控制台自动跟随检测本体云端更新 -->
+  <div class="hd-follow" id="bodyVerBar" style="display:none">
+    <span>🔎 正在检测本体云端版本…</span>
+  </div>
+  <div class="hd-follow-opt" id="followOpt" style="display:none">
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx2);cursor:pointer">
+      <input type="checkbox" id="autoFollowCb" onchange="toggleAutoFollow(this)" style="accent-color:var(--pri)"> 自动跟随本体更新（每 60 秒检测）
+    </label>
+    <button class="btn-mini pri" onclick="checkBodyVersion(true)">🔍 检测本体更新</button>
+    <button class="btn-mini" onclick="syncLatestBody()">⬇️ 拉取本体最新内容</button>
+  </div>
 </header>
 
 <main>
@@ -348,7 +366,7 @@ const CONFIG_PATH   = "admin-data.json";
 // 只有浏览器环境取不到时才回退到该常量，彻底避免常量漏改导致更新判断失效。
 // v1.0.2：27；v1.0.6：31；v1.0.7：32；v1.0.8：33；v1.0.9：34；v1.0.10：35（与 build.gradle.kts 对齐）。
 // v1.0.14：39（修复控制台自更新安装错误后同步 +1）。
-const CONSOLE_BUILTIN_VERSION = 39;
+const CONSOLE_BUILTIN_VERSION = 40;
 
 // 取当前控制台程序的真实版本号：APK 内用系统安装包 versionCode，浏览器回退内置常量
 function getLocalConsoleVersion(){
@@ -652,6 +670,15 @@ async function connect(){
     // 老版本也一定能先收到新版本推送弹窗，不再被渲染死锁挡住
     checkConsoleUpdate();
     renderAll();
+    // v1.3.0：控制台跟随检测本体云端更新（显示版本状态条 + 自动跟随）
+    try{
+      const cb = document.getElementById("autoFollowCb");
+      if(cb) cb.checked = __autoFollow;
+      const opt = document.getElementById("followOpt");
+      if(opt) opt.style.display = "flex";
+      checkBodyVersion(false);
+      if(__autoFollow) startAutoFollow();
+    }catch(e){}
     // v1.0.8：延迟 3 秒二次检查控制台更新，确保弹窗不被首页渲染/其他弹窗遮挡，
     // 双保险保证「发现新版本 → 最新动态 CSS 手绘弹窗」一定弹出
     setTimeout(function(){ try{ checkConsoleUpdate(); }catch(e){} }, 3000);
@@ -711,6 +738,11 @@ function setSub(t){ $("hdSub").textContent = t; }
  * 断开与仓库的连接：清空内存中的云端数据与凭据状态（不删除本地保存的配置）
  */
 function disconnect(){
+  try{
+    const el = document.getElementById("bodyVerBar"); if(el) el.style.display = "none";
+    const opt = document.getElementById("followOpt"); if(opt) opt.style.display = "none";
+    stopAutoFollow();
+  }catch(e){}
   // 仅断开与仓库的联系，不重置 Token、不改变配置
   S.admin = null; S.sha = ""; S.loaded = false; S.dirty = false; S.apks = []; S.changeLog = [];
   renderAll();
@@ -1135,6 +1167,91 @@ async function uploadFile(file, folder){
   return rawUrl(p);
 }
 
+// ============ v1.3.0 自定义上传图标（软件/提示词/Skill 通用） ============
+async function uploadIcon(ev, targetId){
+  const f = ev.target.files[0]; if(!f) return;
+  if(!/^image\//.test(f.type) && !/\.(png|jpe?g|webp|gif|svg|ico)$/i.test(f.name)){ toast("请选择图片文件(png/jpg/webp/gif/svg)","err"); return; }
+  const box = ev.target.previousElementSibling;
+  if(box) box.innerHTML = `⏳ 正在上传图标 ${f.name}…`;
+  try{
+    const url = await uploadFile(f, "dist/uploads");
+    const input = document.getElementById(targetId);
+    if(input) input.value = url;
+    if(box) box.innerHTML = `✅ 图标上传完成：<img src="${esc(url)}" style="width:20px;height:20px;border-radius:5px;vertical-align:middle"> ${esc(f.name)}`;
+    toast("自定义图标已上传并填充，保存后即可实时同步到本体","ok");
+  }catch(e){
+    toast("图标上传失败：" + (e && e.message ? e.message : "网络错误"), "err");
+    if(box) box.innerHTML = `❌ 上传失败，请重试`;
+  }
+}
+
+// ============ v1.3.0 控制台跟随检测本体更新 ============
+let __bodyVerTimer = null;
+let __autoFollow = false;   // 自动跟随开关（本地记忆）
+try{ __autoFollow = localStorage.getItem("lzdz_autofollow") === "1"; }catch(e){}
+
+async function checkBodyVersion(showToast){
+  if(!S.admin){ if(showToast) toast("请先连接云端","err"); return; }
+  try{
+    const r = await fetchWithTimeout(`${apiBase()}/repos/${S.owner}/${S.repo}/contents/${CONFIG_PATH}`, { headers: ghHeaders() }, 8000);
+    const j = await r.json();
+    const remote = JSON.parse(b64DecodeUtf8(j.content || ""));
+    const rv = remote.version || {};
+    const localVer = (S.admin.version||{}).name || "?";
+    const remoteVer = rv.name || "?";
+    const el = document.getElementById("bodyVerBar");
+    const localCode = (S.admin.version||{}).code || 0;
+    const remoteCode = rv.code || 0;
+    if(el){
+      if(remoteCode > localCode){
+        el.innerHTML = `<span style="color:#ff2d78">⚠️ 检测到本体云端更新：v${esc(localVer)} → v${esc(remoteVer)}</span> <button class="btn-mini pri" onclick="syncLatestBody()">⬇️ 一键同步最新内容</button>`;
+        el.style.display = "flex";
+      }else if(remoteCode === localCode){
+        el.innerHTML = `<span style="color:#4ade80">✅ 已跟随本体最新版本 v${esc(remoteVer)}</span>`;
+        el.style.display = "flex";
+      }else{
+        el.innerHTML = `<span style="color:#fbbf24">⚠️ 本地编辑版本高于云端：v${esc(localVer)}（云端 v${esc(remoteVer)}）</span>`;
+        el.style.display = "flex";
+      }
+    }
+    if(showToast) toast(remoteCode === localCode ? "已跟随本体最新版本" : `检测到本体更新：v${remoteVer}`,"ok");
+    return { localVer, remoteVer, localCode, remoteCode };
+  }catch(e){
+    if(showToast) toast("检测失败：" + (e && e.message ? e.message : "网络错误"),"err");
+    return null;
+  }
+}
+
+// 一键同步本体最新内容（重新拉取云端 admin-data.json 覆盖本地编辑缓冲）
+async function syncLatestBody(){
+  try{
+    const r = await fetchWithTimeout(`${apiBase()}/repos/${S.owner}/${S.repo}/contents/${CONFIG_PATH}`, { headers: ghHeaders() }, 10000);
+    const j = await r.json();
+    const obj = JSON.parse(b64DecodeUtf8(j.content || "{}"));
+    S.admin = obj; S.sha = j.sha; S.loaded = true; S.dirty = false;
+    renderAll();
+    toast("已同步本体最新内容，请检查后按需「应用/发布」","ok");
+    checkBodyVersion(false);
+  }catch(e){
+    toast("同步失败：" + (e && e.message ? e.message : "网络错误"),"err");
+  }
+}
+
+// 自动跟随开关
+function toggleAutoFollow(cb){
+  __autoFollow = !!cb.checked;
+  try{ localStorage.setItem("lzdz_autofollow", __autoFollow ? "1" : "0"); }catch(e){}
+  toast(__autoFollow ? "已开启自动跟随：每 60 秒检测本体云端更新" : "已关闭自动跟随","ok");
+  if(__autoFollow){ startAutoFollow(); }else{ stopAutoFollow(); }
+}
+function startAutoFollow(){
+  stopAutoFollow();
+  __bodyVerTimer = setInterval(()=>{ if(S.admin && S.loaded) checkBodyVersion(false); }, 60000);
+}
+function stopAutoFollow(){
+  if(__bodyVerTimer){ clearInterval(__bodyVerTimer); __bodyVerTimer = null; }
+}
+
 // ============ 通用工具 ============
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function uid(prefix){ return (prefix||"id")+"_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
@@ -1188,7 +1305,25 @@ function renderAll(){
 function renderHome(){
   if(!S.admin || !S.admin.home) { $("homePage").innerHTML = `<div class="empty">请先点击顶部「连接并加载云端数据」</div>`; return; }
   const cats = S.admin.home.categories || [];
-  let html = `<div class="card">
+  const softCount = (S.admin.software||[]).length;
+  const skillCount = (S.admin.skills||[]).length;
+  const siteCount = cats.reduce((a,c)=>a+((c.cards||[]).length+(c.subcategories||[]).reduce((x,s)=>x+(s.cards||[]).length,0)),0);
+  const ver = S.admin.version||{};
+  let html = `<div class="card dash-card">
+    <div class="action-banner">
+      <b>📊 控制台数据看板</b>
+      <span class="hint">实时跟随本体云端内容 · 编辑即同步</span>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-cell"><b>${esc(ver.name||"?" )}</b><span>本体版本</span></div>
+      <div class="dash-cell"><b>${cats.length}</b><span>首页分类</span></div>
+      <div class="dash-cell"><b>${siteCount}</b><span>站点卡片</span></div>
+      <div class="dash-cell"><b>${softCount}</b><span>软件条目</span></div>
+      <div class="dash-cell"><b>${skillCount}</b><span>Skill/提示词</span></div>
+      <div class="dash-cell"><b>${(S.admin.tools||[]).length}</b><span>云端工具</span></div>
+    </div>
+  </div>
+  <div class="card">
     <div class="action-banner">
       <b>🏠 首页分类与站点管理</b>
       <span class="hint">支持分类/角标实时增删，并推送至本体触发更新弹窗</span>
@@ -1642,8 +1777,11 @@ function softForm(si){
     <input id="fSwUrl" style="flex:1" value="${esc(s.url)}" placeholder="https://...">
     <button class="btn-mini pri" onclick="autoFetchIcon()">🎯 自动获取图标</button>
   </div>
+  <label>自定义上传图标（优先显示自定义图标）</label>
+  <div class="upload-box" onclick="document.getElementById('fSwIconFile').click()">🖼️ 点击上传自定义图标（png/jpg/webp/gif/svg）</div>
+  <input type="file" id="fSwIconFile" accept="image/*" onchange="uploadIcon(event,'fSwIconUrl')">
   <div class="two-col">
-    <div><label>软件图标 URL（可自动获取）</label><input id="fSwIconUrl" value="${esc(s.iconUrl)}" placeholder="https://.../icon.png"></div>
+    <div><label>软件图标 URL（可自动获取或使用上方上传）</label><input id="fSwIconUrl" value="${esc(s.iconUrl)}" placeholder="https://.../icon.png"></div>
     <div><label>作者</label><input id="fSwAuthor" value="${esc(s.author)}"></div>
   </div>
   <div class="two-col">
@@ -1868,6 +2006,10 @@ function skillForm(si){
     <label>Skill 下载直链 URL</label>
     <input id="fSkUrl" value="${esc(s.url)}" placeholder="https://...">
   </div>
+  <label>自定义上传图标（Skill 卡片图标）</label>
+  <div class="upload-box" onclick="document.getElementById('fSkIconFile').click()">🖼️ 点击上传自定义图标（png/jpg/webp/gif/svg）</div>
+  <input type="file" id="fSkIconFile" accept="image/*" onchange="uploadIcon(event,'fSkIconUrl')">
+  <label>或填写图标 URL</label><input id="fSkIconUrl" value="${esc(s.iconUrl)}" placeholder="https://.../icon.png">
   <div class="two-col">
     <div><label>作者</label><input id="fSkAuthor" value="${esc(s.author)}"></div>
     <div><label>角标</label><input id="fSkBadge" value="${esc(s.badge)}" placeholder="如 爆款推荐 / 免费开源"></div>
@@ -1913,6 +2055,10 @@ function promptForm(promptType, si){
     <div><label>目标模型/参数</label><input id="fSkBadge" value="${esc(s.badge)}" placeholder="如 Midjourney v6.1 / Sora"></div>
   </div>
   <label>标签（空格分隔）</label><input id="fSkTags" value="${esc(s.tags)}" placeholder="如 赛博科幻 唯美写实">
+  <label>自定义上传图标（提示词卡片图标）</label>
+  <div class="upload-box" onclick="document.getElementById('fSkPromptIconFile').click()">🖼️ 点击上传自定义图标（png/jpg/webp/gif/svg）</div>
+  <input type="file" id="fSkPromptIconFile" accept="image/*" onchange="uploadIcon(event,'fSkPromptIconUrl')">
+  <label>或填写图标 URL</label><input id="fSkPromptIconUrl" value="${esc(s.iconUrl)}" placeholder="https://.../icon.png">
   <label>本地上传预览图（效果图，必传最佳）</label>
   <div class="upload-box" onclick="document.getElementById('fSkImg').click()">🖼️ 点击选择预览图</div>
   <input type="file" id="fSkImg" accept="image/*" onchange="uploadSkillImg(event)">
@@ -1939,6 +2085,7 @@ function savePrompt(idx){
   s.tags = $("fSkTags").value.trim();
   s.previewUrl = $("fSkImgUrl").value.trim();
   s.mediaUrl = $("fSkMediaUrl") ? $("fSkMediaUrl").value.trim() : "";
+  s.iconUrl = $("fSkPromptIconUrl") ? $("fSkPromptIconUrl").value.trim() : "";
   s.url = "";
   s.mode = "file";
   if(idx < 0) S.admin.skills.push(s);
@@ -2023,7 +2170,7 @@ function saveSkill(si){
     tags: $("fSkTags").value.trim(),
     previewUrl: $("fSkImgUrl").value.trim(),
     mediaUrl: $("fSkMediaUrl") ? $("fSkMediaUrl").value.trim() : "",
-    iconUrl: "",
+    iconUrl: $("fSkIconUrl") ? $("fSkIconUrl").value.trim() : "",
     mode: mode
   };
   if(si >= 0){
