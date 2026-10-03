@@ -40,6 +40,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -84,8 +85,9 @@ private fun autoCategorize(res: UploadedResourceEntity): String {
 /** v1.1.7 修复「软件版块图标不识别」：
  *  多源自动识别软件 icon——
  *  1. 云端已配置 iconUrl 优先（res.iconUrl 由调用方处理）
- *  2. 这里返回站点自身 favicon（/favicon.ico，最可靠）
- *  3. 国内可访问的第三方 favicon 服务（icon.horse / favicon.im / f.icoji），Google 服务国内不可用已弃用
+ *  2. 这里生成多个候选源，由 AutoIconImage 逐个回退尝试（v1.1.16 增强：
+ *     不再只取站点自身 favicon——很多站点 /favicon.ico 返回 404 导致无图标；
+ *     改为国内可访问的 favicon 聚合服务优先，站点自身兜底）
  */
 private fun autoFaviconUrl(url: String): String {
     val host = try {
@@ -93,21 +95,63 @@ private fun autoFaviconUrl(url: String): String {
     } catch (e: Exception) {
         null
     } ?: return ""
-    // 站点自身 favicon（最可靠，优先）
+    // 站点自身 favicon（最可靠，但不少站点 404，放最后兜底）
     val self = "https://$host/favicon.ico"
-    // 国内/全球可访问的 favicon 聚合服务（按顺序回退）
+    // 国内/全球可访问的 favicon 聚合服务（按成功率优先排序，逐个回退）
     val mirrors = listOf(
-        "https://icon.horse/icon/$host",
         "https://favicon.im/$host?size=64",
         "https://f.icoji.com/icon/$host",
+        "https://icon.horse/icon/$host",
         "https://www.google.com/s2/favicons?domain=$host&sz=64"
     )
-    // 返回站点自身 + 聚合服务串（调用方会逐个尝试/兜底）
-    return (listOf(self) + mirrors).joinToString("|@|")
+    // 返回多个候选源串（调用方 AutoIconImage 会逐个尝试/兜底）
+    return (mirrors + self).joinToString("|@|")
 }
 
-/** v1.1.7：从多源字符串中取第一个可用 icon 地址（“|@|” 分隔） */
-private fun firstIconUrl(multi: String): String = multi.split("|@|").firstOrNull()?.takeIf { it.isNotBlank() } ?: ""
+/** v1.1.16 修复「部分软件没有 icon」：多源 favicon 逐个回退加载组件。
+ *  传入 “|@|” 分隔的候选源列表，当前源加载失败（onError）时自动切换到下一个源重试，
+ *  全部失败则仅显示底层文字徽标（由调用方提供 fallback 背景）。
+ *  （替换原先只取第一个源、失败即无图标的逻辑）
+ */
+@Composable
+private fun AutoIconImage(
+    sources: String,
+    contentDescription: String?,
+    modifier: Modifier,
+    fallbackColor: Color,
+    fallbackText: String
+) {
+    val candidates = remember(sources) { sources.split("|@|").filter { it.isNotBlank() } }
+    var index by remember(sources) { mutableIntStateOf(0) }
+    var allFailed by remember(sources) { mutableStateOf(candidates.isEmpty()) }
+    Box(modifier = modifier.clip(RoundedCornerShape(10.dp)), contentAlignment = Alignment.Center) {
+        // 底层文字徽标（全部源失败时可见）
+        Box(
+            modifier = Modifier.fillMaxSize().background(fallbackColor.copy(alpha = 0.15f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = fallbackText,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Black,
+                color = fallbackColor
+            )
+        }
+        // 当前候选源（加载中/成功时覆盖底层）
+        if (!allFailed && index < candidates.size) {
+            coil.compose.AsyncImage(
+                model = candidates[index],
+                contentDescription = contentDescription,
+                contentScale = ContentScale.Crop,
+                onError = {
+                    // 当前源失败 → 尝试下一个；全部失败 → 显示文字徽标
+                    if (index + 1 < candidates.size) index++ else allFailed = true
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
 
 /**
  * 资源展示页（软件 / Skill）v1.8.7：
@@ -593,9 +637,9 @@ private fun SoftwareGridCard(
         else -> MaterialTheme.colorScheme.primary
     }
 
-    // v1.8.7：自动识别 icon（优先云端 iconUrl，其次 Google favicon 服务）
-    // v1.1.7：多源 favicon（站点自身 icon + 国内聚合服务），提升识别成功率
-    val displayIcon = res.iconUrl.ifBlank { firstIconUrl(autoFaviconUrl(res.url.ifBlank { res.fileUrl })) }
+    // v1.8.7：自动识别 icon（优先云端 iconUrl，其次 favicon 聚合服务）
+    // v1.1.16：保留完整多源串，由 AutoIconImage 逐个回退加载（修复部分软件无图标）
+    val iconSources = res.iconUrl.ifBlank { autoFaviconUrl(res.url.ifBlank { res.fileUrl }) }
 
     fun downloadToLocal(url: String, fileName: String?) {
         try {
@@ -661,35 +705,35 @@ private fun SoftwareGridCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
         ) {
-            // 左侧：自动识别的软件 icon（云端 icon 优先，回退 favicon，再回退文字徽标）
+            // 左侧：自动识别的软件 icon（云端 icon 优先，多源 favicon 逐个回退，再回退文字徽标）
             Box(
                 modifier = Modifier.size(42.dp),
                 contentAlignment = Alignment.Center
             ) {
-                if (displayIcon.isNotBlank()) {
-                    coil.compose.AsyncImage(
-                        model = displayIcon,
+                if (iconSources.isNotBlank()) {
+                    AutoIconImage(
+                        sources = iconSources,
                         contentDescription = res.title,
-                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(42.dp),
+                        fallbackColor = badgeColor,
+                        fallbackText = badgeText
+                    )
+                } else {
+                    // 底层类型徽标（无任何 icon 源时可见）
+                    Box(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(RoundedCornerShape(10.dp))
-                    )
-                }
-                // 底层类型徽标（icon 加载失败时可见）
-                Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(badgeColor.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = badgeText,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Black,
-                        color = badgeColor
-                    )
+                            .background(badgeColor.copy(alpha = 0.15f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = badgeText,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Black,
+                            color = badgeColor
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -783,8 +827,8 @@ private fun SoftwareHorizontalCard(
         else -> MaterialTheme.colorScheme.primary
     }
 
-    // v1.1.7：多源 favicon，提升识别成功率
-    val displayIcon = res.iconUrl.ifBlank { firstIconUrl(autoFaviconUrl(res.url.ifBlank { res.fileUrl })) }
+    // v1.1.16：多源 favicon 逐个回退，提升识别成功率（修复部分软件无图标）
+    val iconSources = res.iconUrl.ifBlank { autoFaviconUrl(res.url.ifBlank { res.fileUrl }) }
     // v1.0.9 主题：卡片描边用主题主色渐变（清爽浅红系）
     val themePrimary = MaterialTheme.colorScheme.primary
     val themeSecondary = MaterialTheme.colorScheme.secondary
@@ -859,29 +903,29 @@ private fun SoftwareHorizontalCard(
                     modifier = Modifier.size(40.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (displayIcon.isNotBlank()) {
-                        coil.compose.AsyncImage(
-                            model = displayIcon,
+                    if (iconSources.isNotBlank()) {
+                        AutoIconImage(
+                            sources = iconSources,
                             contentDescription = res.title,
-                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.size(40.dp),
+                            fallbackColor = badgeColor,
+                            fallbackText = badgeText
+                        )
+                    } else {
+                        Box(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(badgeColor.copy(alpha = 0.15f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = badgeText,
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Black,
-                            color = badgeColor
-                        )
+                                .background(badgeColor.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = badgeText,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Black,
+                                color = badgeColor
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -1030,16 +1074,17 @@ private fun ResourceFileCard(
         Column(modifier = Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // v1.0.12：Skill 场景取消 icon 图标功能，统一使用类型文字徽标呈现
-                val displayIcon = if (resourceType == "skill")
+                val iconSources = if (resourceType == "skill")
                     ""
                 else
-                    res.iconUrl.ifBlank { firstIconUrl(autoFaviconUrl(res.url.ifBlank { res.fileUrl })) }
-                if (displayIcon.isNotBlank()) {
-                    AsyncImageCompat(
-                        url = displayIcon,
-                        fallbackText = badgeText,
+                    res.iconUrl.ifBlank { autoFaviconUrl(res.url.ifBlank { res.fileUrl }) }
+                if (iconSources.isNotBlank()) {
+                    AutoIconImage(
+                        sources = iconSources,
+                        contentDescription = res.title,
+                        modifier = Modifier.size(40.dp),
                         fallbackColor = badgeColor,
-                        modifier = Modifier.size(40.dp)
+                        fallbackText = badgeText
                     )
                 } else {
                     Box(
