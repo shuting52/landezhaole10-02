@@ -55,8 +55,9 @@ android {
     // 工具箱/设置页/导航整体胶囊化 UI；主题切换由控制台「主题工具箱」统一管理（themeKit 9 组件自定义代码）
     // v1.1.15：恢复默认经典皮肤（修复白底绿字）· 底部 Tab 缩小 · 公告栏跑马灯稳定 ·
     // 删除墓碑实时同步 · Skill 大小写修正 · 工具箱新增起点集 18 工具
-    versionCode = 115
-    versionName = "1.1.15"
+    // v1.1.16：欢迎弹窗只弹一次 · 工具箱内置 10 工具 · Skill Tab 恢复 FilterChip · icon 多源回退 · 轮询 60 秒实时同步
+    versionCode = 116
+    versionName = "1.1.16"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
