@@ -23201,7 +23201,152 @@
     "enabled": false,
     "url": "https://myip.ipip.net/"
   },
-  "tools": [],
+  "tools": [
+    {
+      "id": "qdj_jizhang",
+      "name": "极简记账",
+      "desc": "不必打开App，敲一敲手机背面就自动记账。分类统计、报表一目了然",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "💰",
+      "badge": "热门"
+    },
+    {
+      "id": "qdj_wupin",
+      "name": "我的物品",
+      "desc": "管理物品，统计总资产，掌握日均/次均使用成本，过期提醒也支持",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "📦",
+      "badge": "热门"
+    },
+    {
+      "id": "qdj_jueding",
+      "name": "帮我做决定",
+      "desc": "解决选择困难，还可设定选项权重，轻松做决定",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "🤔",
+      "badge": ""
+    },
+    {
+      "id": "qdj_rizi",
+      "name": "数日子",
+      "desc": "查看生日、纪念日等重要日子的倒数/已过天数，支持通知提醒与桌面小组件",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "📅",
+      "badge": ""
+    },
+    {
+      "id": "qdj_suishouji",
+      "name": "随手记",
+      "desc": "打卡、记录、目标进度、统计、照片墙，一站搞定",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "📝",
+      "badge": ""
+    },
+    {
+      "id": "qdj_jisuanqi",
+      "name": "计算器+",
+      "desc": "带计算历史的计算器，插入计算描述、编辑、多项求和等",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "🧮",
+      "badge": ""
+    },
+    {
+      "id": "qdj_xiaorichang",
+      "name": "小日常",
+      "desc": "每日待办事项，提醒通知，支持桌面小组件",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "✅",
+      "badge": ""
+    },
+    {
+      "id": "qdj_shijian",
+      "name": "时间计算",
+      "desc": "计算两个日期相距时间，相距多少年、多少天、多少秒等",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "⏱️",
+      "badge": ""
+    },
+    {
+      "id": "qdj_shuzi",
+      "name": "数字时钟",
+      "desc": "沉浸式翻页时钟，计时或者专注均可",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "⏰",
+      "badge": ""
+    },
+    {
+      "id": "qdj_jifenban",
+      "name": "计分板",
+      "desc": "乒乓球、篮球、台球、羽毛球、足球等多种比赛计分板，比赛历史可查",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "🏀",
+      "badge": ""
+    },
+    {
+      "id": "qdj_buguangdeng",
+      "name": "补光灯",
+      "desc": "拍摄时补光，内置多种光效，还可当小夜灯",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "🔦",
+      "badge": ""
+    },
+    {
+      "id": "qdj_pintu",
+      "name": "拼图",
+      "desc": "多个图片拼接成一张图，支持裁剪、涂鸦",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "🧩",
+      "badge": ""
+    },
+    {
+      "id": "qdj_zhaoxiangguan",
+      "name": "照相馆",
+      "desc": "各种尺寸证件照制作，换底色、裁剪尺寸、改照片大小，可合成照片",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "📷",
+      "badge": ""
+    },
+    {
+      "id": "qdj_ticiqi",
+      "name": "提词器",
+      "desc": "视频录制不用记台词，内容字体颜色速度随心调",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "🎬",
+      "badge": ""
+    },
+    {
+      "id": "qdj_huilv",
+      "name": "汇率换算",
+      "desc": "支持实时汇率换算，出国购物好帮手",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "💱",
+      "badge": ""
+    },
+    {
+      "id": "qdj_danwei",
+      "name": "单位换算",
+      "desc": "支持166种单位转换，轻松换算",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "📐",
+      "badge": ""
+    },
+    {
+      "id": "qdj_cailiao",
+      "name": "材料计算器",
+      "desc": "建筑建材（原料棒、原料管等）重量与金额计算，支持自定义比重、数量",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "🧱",
+      "badge": ""
+    },
+    {
+      "id": "qdj_more",
+      "name": "起点集·50+工具",
+      "desc": "翻页时钟、计数器、商品比价、图片压缩、计时器等50多种功能，一个App全搞定",
+      "url": "http://www.appchina.com/app/com.clicksk.cjdu",
+      "icon": "✨",
+      "badge": "新"
+    }
+  ],
   "themeKit": {
     "appBar": {
       "css": ""
@@ -23230,5 +23375,6 @@
     "global": {
       "css": "background: #ffffff;\ncolor: #1E293B;"
     }
-  }
+  },
+  "_ai_notice": "内容由AI生成"
 }
