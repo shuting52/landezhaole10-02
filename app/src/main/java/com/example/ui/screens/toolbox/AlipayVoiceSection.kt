@@ -68,36 +68,43 @@ import kotlin.random.Random
 
 private const val SAMPLE_RATE = 44100
 
-/** 合成钱币提示音播放器：叮咚 + 金币碰撞声 */
+/** 合成钱币提示音播放器（v1.1.24 重做：多泛音叮咚 + 金属质感金币碰撞 + 轻微混响尾音） */
 private class CoinSoundPlayer(private val onDone: (() -> Unit)? = null) {
 
     private fun generatePcm(): ShortArray {
-        val totalSec = 1.5
+        val totalSec = 2.2
         val n = (SAMPLE_RATE * totalSec).toInt()
         val out = ShortArray(n)
-        // ---- 1. 开头「叮咚」双音（类似到账提示音）----
-        val dingFreq = 1318.5f // E6
-        val dongFreq = 987.77f // B5
-        val dingStart = 0.02f
-        val dingDur = 0.22f
-        val dongStart = 0.26f
-        val dongDur = 0.30f
-        addTone(out, dingFreq, dingStart, dingDur, 0.85f, decay = 8f)
-        addTone(out, dongFreq, dongStart, dongDur, 0.75f, decay = 7f)
-
-        // ---- 2. 金币碰撞声（3-6 颗清脆硬币，高频叮当）----
         val rnd = Random(System.currentTimeMillis())
-        var t = 0.62f
-        val coinCount = 5
+        // ---- 1. 开头「叮咚」双音（更接近真实收款提示音：主音 + 2 个泛音 + 混响尾音）----
+        val dingFreq = 1318.5f // E6 主音
+        val dongFreq = 987.77f // B5 主音
+        addTone(out, dingFreq, 0.02f, 0.24f, 0.90f, decay = 9f)
+        addTone(out, dingFreq * 2.0f, 0.02f, 0.18f, 0.30f, decay = 12f)  // 泛音1
+        addTone(out, dingFreq * 3.01f, 0.02f, 0.12f, 0.12f, decay = 16f) // 泛音2
+        addTone(out, dingFreq * 0.5f, 0.02f, 0.30f, 0.10f, decay = 6f)  // 泛音3（低频体）
+        addTone(out, dongFreq, 0.27f, 0.34f, 0.78f, decay = 7f)
+        addTone(out, dongFreq * 2.0f, 0.27f, 0.24f, 0.26f, decay = 10f)
+        addTone(out, dongFreq * 3.0f, 0.27f, 0.16f, 0.10f, decay = 14f)
+        addTone(out, dongFreq * 0.5f, 0.27f, 0.38f, 0.09f, decay = 5f)
+
+        // ---- 2. 金币碰撞声（5-8 枚清脆硬币：随机频率 + 双泛音 + 长混响尾）----
+        var t = 0.68f
+        val coinCount = 5 + rnd.nextInt(3)
         repeat(coinCount) { i ->
-            val freq = 2200f + rnd.nextFloat() * 1600f
-            val dur = 0.045f + rnd.nextFloat() * 0.05f
-            val vol = 0.5f - i * 0.05f
-            addTone(out, freq, t, dur, vol, decay = 18f)
-            // 带一点点金属泛音
-            addTone(out, freq * 2.01f, t, dur * 0.6f, vol * 0.4f, decay = 22f)
-            t += dur + 0.035f + rnd.nextFloat() * 0.03f
+            val freq = 1900f + rnd.nextFloat() * 1900f
+            val dur = 0.05f + rnd.nextFloat() * 0.05f
+            val vol = 0.52f - i * 0.045f
+            addTone(out, freq, t, dur, vol, decay = 16f)
+            addTone(out, freq * 2.01f, t, dur * 0.55f, vol * 0.45f, decay = 20f)
+            addTone(out, freq * 2.98f, t, dur * 0.35f, vol * 0.18f, decay = 24f)
+            // 混响尾音：主音延迟 0.02s 后衰减重放，制造空间感
+            addTone(out, freq * 0.99f, t + 0.018f, dur * 1.8f, vol * 0.30f, decay = 9f)
+            t += dur + 0.04f + rnd.nextFloat() * 0.035f
         }
+        // 收尾一声更响的金币（模仿硬币落台面）
+        addTone(out, 2500f + rnd.nextFloat() * 800f, t, 0.10f, 0.50f, decay = 14f)
+        addTone(out, 2500f * 2.01f, t, 0.06f, 0.22f, decay = 18f)
         return out
     }
 
@@ -187,7 +194,9 @@ fun AlipayVoiceSection(modifier: Modifier = Modifier) {
         engine = TextToSpeech(context.applicationContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 engine?.language = Locale.CHINA
-                engine?.setSpeechRate(1.0f)
+                // v1.1.24：调低音调、语速自然，更像真人到账播报
+                engine?.setSpeechRate(0.98f)
+                engine?.setPitch(0.92f)
                 tts = engine
                 ttsReady = true
                 onReady()

@@ -1,7 +1,15 @@
 package com.example.ui.screens.toolbox
 
 import android.content.Context
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,7 +49,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,6 +65,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * v1.1.18 新工具：生理期记录
@@ -151,7 +166,17 @@ fun PeriodSection(modifier: Modifier = Modifier) {
             }
         }
 
-        // 看板
+        // 看板：动态环形周期图 + 数据卡
+        val cycleLen = if (avgCycle != null) avgCycle else 28
+        val daysSinceStart = latest?.let { r ->
+            try {
+                val s = dateFmt.parse(r.startDate)
+                ((System.currentTimeMillis() - s.time) / 86400000L).toInt().coerceAtLeast(0)
+            } catch (_: Exception) { 0 }
+        } ?: 0
+        val dayInCycle = daysSinceStart % cycleLen
+        val cycleProgress = dayInCycle.toFloat() / cycleLen.toFloat()
+
         Surface(
             color = Color(0xFFFFF1F7),
             shape = RoundedCornerShape(18.dp),
@@ -160,7 +185,17 @@ fun PeriodSection(modifier: Modifier = Modifier) {
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
                 Text("? 周期看板", fontSize = 13.sp, fontWeight = FontWeight.Black, color = Color(0xFFDB2777))
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
+                // v1.1.24：动态环形周期图（渐变流动弧 + 移动光点动画）
+                if (latest != null) {
+                    CycleRing(
+                        progress = cycleProgress,
+                        dayInCycle = dayInCycle,
+                        cycleLen = cycleLen,
+                        nextDate = nextDate ?: "—"
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     DashboardCell("最近开始", latest?.startDate ?: "—", Modifier.weight(1f))
                     DashboardCell("周期天数", periodDays?.toString() ?: "—", Modifier.weight(1f))
@@ -249,6 +284,131 @@ fun PeriodSection(modifier: Modifier = Modifier) {
                 showAddDialog = false
             }
         )
+    }
+}
+
+/**
+ * v1.1.24：动态环形周期图——渐变流动弧 + 移动光点动画
+ * 显示当前处于周期第几天、进度百分比与预计下次日期
+ */
+@Composable
+private fun CycleRing(
+    progress: Float,
+    dayInCycle: Int,
+    cycleLen: Int,
+    nextDate: String
+) {
+    val transition = rememberInfiniteTransition(label = "cycle_ring")
+    // 弧线渐变角度缓慢旋转（流动感）
+    val sweep by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(6000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "cycle_sweep"
+    )
+    // 光点沿弧线移动
+    val dot by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(6000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "cycle_dot"
+    )
+    // 呼吸
+    val breathe by transition.animateFloat(
+        initialValue = 0.92f,
+        targetValue = 1.06f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1400, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "cycle_breathe"
+    )
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+    ) {
+        Canvas(modifier = Modifier.size(140.dp)) {
+            val strokeWidth = 13.dp.toPx()
+            val radius = (size.minDimension - strokeWidth) / 2f
+            val center = Offset(size.width / 2f, size.height / 2f)
+            val startAngle = -90f
+            val sweepAngle = 360f * progress.coerceIn(0f, 1f)
+
+            // 背景环
+            drawArc(
+                color = Color(0xFFFFDDE8),
+                startAngle = startAngle,
+                sweepAngle = 360f,
+                useCenter = false,
+                topLeft = Offset(center.x - radius, center.y - radius),
+                size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+            )
+            // 渐变流动进度弧
+            val brush = Brush.sweepGradient(
+                colors = listOf(
+                    Color(0xFFFF8FB1),
+                    Color(0xFFF472B6),
+                    Color(0xFFDB2777),
+                    Color(0xFFFF8FB1)
+                ),
+                center = center
+            )
+            drawArc(
+                brush = brush,
+                startAngle = startAngle + sweep % 360f,
+                sweepAngle = sweepAngle,
+                useCenter = false,
+                topLeft = Offset(center.x - radius, center.y - radius),
+                size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
+                style = Stroke(width = strokeWidth * breathe, cap = StrokeCap.Round)
+            )
+            // 移动光点
+            val dotAngle = (-90f + dot * 360f) * PI.toFloat() / 180f
+            val dotR = radius
+            val dotPos = Offset(
+                center.x + cos(dotAngle) * dotR,
+                center.y + sin(dotAngle) * dotR
+            )
+            drawCircle(
+                color = Color.White,
+                radius = strokeWidth * 0.55f,
+                center = dotPos
+            )
+            drawCircle(
+                color = Color(0xFFDB2777),
+                radius = strokeWidth * 0.32f,
+                center = dotPos
+            )
+        }
+        // 中心信息
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                "第 $dayInCycle 天",
+                fontSize = 19.sp,
+                fontWeight = FontWeight.Black,
+                color = Color(0xFFDB2777)
+            )
+            Text(
+                "${(progress * 100).toInt()}% · 周期 ${cycleLen} 天",
+                fontSize = 10.sp,
+                color = Color(0xFFB06A8A)
+            )
+            Text(
+                "预计 $nextDate",
+                fontSize = 10.sp,
+                color = Color(0xFFB06A8A)
+            )
+        }
     }
 }
 

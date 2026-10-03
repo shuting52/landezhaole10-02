@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -198,11 +199,18 @@ fun CurrencySection(modifier: Modifier = Modifier) {
                     .clickable { fromMenu = true }
             )
             DropdownMenu(expanded = fromMenu, onDismissRequest = { fromMenu = false }) {
-                Currencies.forEach { (code, name) ->
-                    DropdownMenuItem(
-                        text = { Text("$name ($code)", fontSize = 13.sp) },
-                        onClick = { fromCode = code; fromMenu = false; convert() }
-                    )
+                // v1.1.24：菜单项太多（50+）会超出屏幕被截断，加滚动确保所有货币可选
+                androidx.compose.foundation.layout.Column(
+                    modifier = androidx.compose.ui.Modifier
+                        .heightIn(max = 380.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Currencies.forEach { (code, name) ->
+                        DropdownMenuItem(
+                            text = { Text("$name ($code)", fontSize = 13.sp) },
+                            onClick = { fromCode = code; fromMenu = false; convert() }
+                        )
+                    }
                 }
             }
         }
@@ -248,11 +256,18 @@ fun CurrencySection(modifier: Modifier = Modifier) {
                     .clickable { toMenu = true }
             )
             DropdownMenu(expanded = toMenu, onDismissRequest = { toMenu = false }) {
-                Currencies.forEach { (code, name) ->
-                    DropdownMenuItem(
-                        text = { Text("$name ($code)", fontSize = 13.sp) },
-                        onClick = { toCode = code; toMenu = false; convert() }
-                    )
+                // v1.1.24：菜单项太多（50+）会超出屏幕被截断，加滚动确保所有货币可选
+                androidx.compose.foundation.layout.Column(
+                    modifier = androidx.compose.ui.Modifier
+                        .heightIn(max = 380.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Currencies.forEach { (code, name) ->
+                        DropdownMenuItem(
+                            text = { Text("$name ($code)", fontSize = 13.sp) },
+                            onClick = { toCode = code; toMenu = false; convert() }
+                        )
+                    }
                 }
             }
         }

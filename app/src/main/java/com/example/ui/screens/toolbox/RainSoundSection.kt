@@ -171,21 +171,31 @@ private class SleepSoundEngine {
         return out
     }
 
-    // ============ 各音效合成 ============
+    // ============ 各音效合成（v1.1.24 重写，更接近真实环境音） ============
     private fun rain(out: ShortArray, rnd: Random, light: Boolean) {
-        var lp = 0f
-        val strength = if (light) 0.22f else 0.32f
+        // 真实雨声 ≈ 粉噪声（柔和雨幕）+ 高频雨滴颗粒 + 轻微流水
+        var lp = 0f        // 一阶低通（雨幕主体）
+        var lp2 = 0f       // 次级低通（低频流水底）
+        var prev = 0f
+        val strength = if (light) 0.30f else 0.42f
         for (i in out.indices) {
             val w = rnd.nextFloat() * 2f - 1f
-            lp += 0.08f * (w - lp) // 一阶低通
-            // 轻微雨滴随机颗粒
-            val droplet = if (rnd.nextFloat() < 0.006f) (rnd.nextFloat() * 2f - 1f) * 0.5f else 0f
-            out[i] = ((lp * strength + droplet) * 32767f).coerceIn(-32767f, 32767f).toInt().toUShort().toShort()
+            lp += 0.12f * (w - lp)
+            lp2 += 0.02f * (w - lp2)
+            // 高频雨滴：随机短促颗粒（比原先更密集、更真实）
+            val droplet = if (rnd.nextFloat() < 0.018f) (rnd.nextFloat() * 2f - 1f) * 0.55f else 0f
+            // 轻微湿滑声（相邻样本差分制造水感）
+            val hiss = (w - prev) * 0.35f
+            prev = w
+            out[i] = ((lp * strength + lp2 * 0.10f + droplet + hiss) * 32767f)
+                .coerceIn(-32767f, 32767f).toInt().toUShort().toShort()
         }
     }
 
     private fun thunder(out: ShortArray, rnd: Random) {
+        // 雷雨 = 雨幕 + 低频隆隆 + 间歇雷爆（加强低频能量，更真实）
         var lp = 0f
+        var lp2 = 0f
         var rumblePhase = 0f
         var rumbleAmp = 0.5f
         var nextThunder = 3f + rnd.nextFloat() * 6f // 秒
@@ -193,12 +203,13 @@ private class SleepSoundEngine {
         var thunderFade = 0f
         for (i in out.indices) {
             val t = i / SR.toFloat()
-            // 持续雨声
+            // 持续雨声（加强）
             val w = rnd.nextFloat() * 2f - 1f
             lp += 0.10f * (w - lp)
-            // 低频隆隆
+            lp2 += 0.03f * (w - lp2)
+            // 低频隆隆（两阶叠加更厚重）
             rumblePhase += 0.5f + rnd.nextFloat() * 0.3f
-            val rumble = sin(rumblePhase) * 0.4f + sin(rumblePhase * 0.37f) * 0.6f
+            val rumble = sin(rumblePhase) * 0.35f + sin(rumblePhase * 0.37f) * 0.45f + sin(rumblePhase * 0.13f) * 0.20f
             // 雷声爆发
             if (t > nextThunder) {
                 thunderActive = 1f
@@ -209,9 +220,11 @@ private class SleepSoundEngine {
                 thunderFade += 0.0012f
                 thunderActive = (1f - thunderFade).coerceAtLeast(0f)
                 val boom = sin(rnd.nextFloat() * 60f * PI.toFloat() * t) * 0.9f
-                out[i] = ((lp * 0.25f + rumble * rumbleAmp * 0.35f + boom * thunderActive * 0.7f) * 32767f).coerceIn(-32767f, 32767f).toInt().toUShort().toShort()
+                out[i] = ((lp * 0.22f + lp2 * 0.18f + rumble * rumbleAmp * 0.42f + boom * thunderActive * 0.8f) * 32767f)
+                    .coerceIn(-32767f, 32767f).toInt().toUShort().toShort()
             } else {
-                out[i] = ((lp * 0.25f + rumble * rumbleAmp * 0.30f) * 32767f).coerceIn(-32767f, 32767f).toInt().toUShort().toShort()
+                out[i] = ((lp * 0.22f + lp2 * 0.15f + rumble * rumbleAmp * 0.36f) * 32767f)
+                    .coerceIn(-32767f, 32767f).toInt().toUShort().toShort()
             }
             if (rnd.nextFloat() < 0.02f) rumbleAmp = 0.3f + rnd.nextFloat() * 0.4f
         }
@@ -232,15 +245,38 @@ private class SleepSoundEngine {
     }
 
     private fun forest(out: ShortArray, rnd: Random) {
+        // v1.1.24：森林 = 柔和风声 + 叶沙沙 + 间歇真实鸟鸣（频率扫频啁啾）
         var lp = 0f
+        var prev = 0f
+        var chirpActive = 0f
+        var chirpPhase = 0f
+        var nextChirp = 1.2f + rnd.nextFloat() * 3f
+        var chirpFreq = 3000f
         for (i in out.indices) {
             val t = i / SR.toFloat()
             val w = rnd.nextFloat() * 2f - 1f
             lp += 0.06f * (w - lp)
             val breeze = 0.6f + 0.4f * sin(2f * PI.toFloat() * 0.13f * t)
-            // 偶发清脆鸟鸣（简化：高频短音）
-            val chirp = if (rnd.nextFloat() < 0.004f) (rnd.nextFloat() * 2f - 1f) * 0.6f else 0f
-            out[i] = ((lp * 0.30f * breeze + chirp) * 32767f).coerceIn(-32767f, 32767f).toInt().toUShort().toShort()
+            // 叶沙沙（高频细节）
+            val rustle = (w - prev) * 0.20f * breeze
+            prev = w
+            // 鸟鸣：频率在 2.4k-4.2k 间扫频的短啁啾，更接近真实叫声
+            if (t > nextChirp) {
+                chirpActive = 1f
+                chirpPhase = 0f
+                chirpFreq = 2400f + rnd.nextFloat() * 1800f
+                nextChirp = t + 2.5f + rnd.nextFloat() * 4f
+            }
+            var chirp = 0f
+            if (chirpActive > 0f) {
+                chirpPhase += 0.05f
+                val env = sin(chirpPhase * PI.toFloat()).coerceAtLeast(0f)
+                val f = chirpFreq * (1f + 0.12f * sin(chirpPhase * 2.4f))
+                chirp = sin(2f * PI.toFloat() * f * t) * env * 0.16f
+                chirpActive -= 0.02f
+            }
+            out[i] = ((lp * 0.28f * breeze + rustle + chirp) * 32767f)
+                .coerceIn(-32767f, 32767f).toInt().toUShort().toShort()
         }
     }
 
@@ -285,16 +321,17 @@ private class SleepSoundEngine {
     }
 
     private fun night(out: ShortArray, rnd: Random) {
+        // v1.1.24：夜晚 = 轻柔夜风 + 蟋蟀啁啾（断续高频 + 鸣叫节奏变化，更自然）
         var lp = 0f
-        var cricketPhase = 0f
         for (i in out.indices) {
             val t = i / SR.toFloat()
             val w = rnd.nextFloat() * 2f - 1f
             lp += 0.05f * (w - lp)
-            // 蟋蟀：断续高频鸣叫（5kHz 短音）
-            val pulse = (sin(2f * PI.toFloat() * 5.2f * t) * 0.5f + 0.5f)
-            val gate = if ((t % 0.9f) < 0.28f) 1f else 0f
-            val cricket = pulse * gate * 0.12f
+            // 蟋蟀：4.5kHz 短脉冲串，鸣叫节奏随时间缓慢变化
+            val slow = 0.62f + 0.38f * sin(2f * PI.toFloat() * 0.11f * t)
+            val pulse = (sin(2f * PI.toFloat() * 4.5f * t) * 0.5f + 0.5f)
+            val gate = if ((t % (1.0f - slow * 0.4f)) < (0.22f + slow * 0.1f)) 1f else 0f
+            val cricket = pulse * gate * (0.10f + slow * 0.06f)
             out[i] = ((lp * 0.10f + cricket) * 32767f).coerceIn(-32767f, 32767f).toInt().toUShort().toShort()
         }
     }

@@ -65,8 +65,10 @@ android {
     // v1.1.21：修复渐变不生效——global.css 纯白背景触发 CUSTOM 时也改用渐变+黑字
     // v1.1.22：卡片恢复金色描边 · 底部Tab放大1.4倍 · 纯白背景强制恢复经典皮肤胶囊渐变
     // v1.1.23：更新下载提速——国内镜像优先+超时缩短 · 控制台连接提速 · WiFi/流量识别下载
-    versionCode = 123
-    versionName = "1.1.23"
+    // v1.1.24：工具箱优化——货币菜单可滚动选所有国家 · 雨声/森林/夜晚/雷雨更真实 ·
+    // 生理期动态环形看板 · 到账语音音效重做（多泛音叮咚+金属金币+混响）
+    versionCode = 124
+    versionName = "1.1.24"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
