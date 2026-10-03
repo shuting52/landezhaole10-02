@@ -204,6 +204,14 @@ fun ResourceCard(
                 )
                 .padding(horizontal = 7.dp, vertical = 7.dp)
         ) {
+            // v1.1.17：彩虹旋转渐变卡片背景（文字背后的背景）——首页卡片专属，其它界面不呈现
+            RainbowSpinBackground(Modifier.fillMaxSize())
+            // 半透明白覆盖层：彩虹柔和透出，文字清晰可读
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White.copy(alpha = 0.80f))
+            )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
