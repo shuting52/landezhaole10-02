@@ -37,25 +37,26 @@ data class ThemePreset(
 )
 
 object ThemePresetsRepository {
-    // v1.1.14：主题切换回归「经典皮肤」——删除全局代码/组件定制功能，
-    // 仅保留默认经典皮肤（简单干净：经典蓝主色 + 纯白底 + 深灰字）与自定义背景。
-    val classicTheme = ThemePreset(
-        id = "classic_default",
-        name = "经典皮肤",
+    // v1.1.18：默认主题改为「盛世华诞」——国潮红金配色（中国红主色 + 烫金辅助 + 暖米白底 + 深红褐字）
+    // 背景为暖米白（非纯白），文字为深红褐（非绿色），整体红金喜庆，契合国庆主题。
+    val shengshiTheme = ThemePreset(
+        id = "shengshi_huadan",
+        name = "盛世华诞",
         style = "classic",
         categoryName = "经典",
-        primaryColor = Color(0xFF2196F3),
-        secondaryColor = Color(0xFF42A5F5),
-        bgColor = Color(0xFFFAFAFA),
+        primaryColor = Color(0xFFDE2910),      // 中国红
+        secondaryColor = Color(0xFFE8A200),   // 鎏金
+        bgColor = Color(0xFFFFF7EC),          // 暖米白（非纯白）
         surfaceColor = Color(0xFFFFFFFF),
-        textColor = Color(0xFF212121),
+        textColor = Color(0xFF3B1F1F),        // 深红褐（非绿色）
         atmosphereEffect = AtmosphereEffect.NONE
     )
 
-    val defaultTheme = classicTheme
+    val defaultTheme = shengshiTheme
 
-    // 仅保留经典皮肤（主题切换即经典，无多余皮肤可选）
+    // 经典皮肤保留可选；盛世华诞作为默认软件主题
     val allThemes: List<ThemePreset> = listOf(
+        shengshiTheme,
         classicTheme
     )
 }

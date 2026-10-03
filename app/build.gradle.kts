@@ -57,8 +57,10 @@ android {
     // 删除墓碑实时同步 · Skill 大小写修正 · 工具箱新增起点集 18 工具
     // v1.1.16：欢迎弹窗只弹一次 · 工具箱内置 10 工具 · Skill Tab 恢复 FilterChip · icon 多源回退 · 轮询 60 秒实时同步
     // v1.1.17：删除 v1.1.16 内置工具 · 经典皮肤核心 · 彩虹渐变卡片背景（首页/软件/Skill）· Skill icon 优化
-    versionCode = 117
-    versionName = "1.1.17"
+    // v1.1.18：开屏改为圆形波浪旋转加载器（懒得找了核心文字 · 3 秒倒计时自动进首页）·
+    // 默认主题「盛世华诞」红金国潮（非白底绿字）· 工具箱新增 5 工具（我的工具夹/支付宝到账语音/车牌摇号/冷笑话/测速网）
+    versionCode = 118
+    versionName = "1.1.18"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

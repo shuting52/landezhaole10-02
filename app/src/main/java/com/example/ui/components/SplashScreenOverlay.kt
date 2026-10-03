@@ -11,9 +11,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,19 +19,15 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,17 +42,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import android.media.MediaPlayer
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
@@ -68,29 +59,21 @@ import android.webkit.WebViewClient
 import android.widget.VideoView
 import coil.compose.AsyncImage
 import com.example.data.remote.SplashDto
-import com.example.ui.components.ComponentThemeResolver
-import com.example.ui.components.LocalComponentThemes
-import com.example.ui.components.UiverseDotsLoader
-import com.example.ui.theme.ElectricCyan
-import com.example.ui.theme.FlameRed
-import com.example.ui.theme.NeonPurple
-import com.example.ui.theme.SunsetOrange
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.withFrameNanos
-import kotlin.math.sin
-import kotlin.random.Random
 
 /**
- * 全功能高阶开屏动画（v1.0.4 升级）：
- * 1. 最新酷炫 CSS 粒子动态特效：上百颗流光粒子漂移 + 粒子间动态连线 + 中心旋转光环 + 星光闪烁
- *    （Canvas 实现，粒子网络实时流动，酷炫不卡顿，完全离线）
- * 2. 多重呼吸脉冲光环 (Breathing Halo)
- * 3. 动态光泽流光标题 "懒得找了" 与副标题渐进呈现
- * 4. 右上角倒计时跳过组件与平滑退出转场
+ * v1.1.18 开屏动画重制版：
+ * 「盛世华诞 · 圆形波浪旋转加载器」
  *
- * 时长：默认 5 秒；云端控制台设定 durationSeconds 后严格跟随后台设定。
- * splashReady=true（云端配置加载完成）后才开始计时，避免云端未加载完就按默认 2 秒提前进入。
+ * 视觉呈现（灵感源自经典 CSS 圆形波浪加载器）：
+ * 1. 五圈不规则波浪环（红/橙/金/绿/青）各自反向不同速度旋转，外发光呼吸
+ * 2. 环绕轨道四颗光点公转，中心金色核心「懒得找了」流光标题
+ * 3. 底部「加载中」点点动画 + 盛世华诞红金渐变背景
+ * 4. 右上角「跳过」倒计时按钮（默认 3 秒，云端可覆盖），倒计时结束自动进入首页
+ *
+ * 云端 type=html/media 分支保留：控制台可切换到 WebView 网页开屏 / 视频开屏 / 图片开屏。
  */
 @Composable
 fun SplashScreenOverlay(
@@ -100,12 +83,9 @@ fun SplashScreenOverlay(
     splashReady: Boolean = false
 ) {
     var countdownSeconds by remember(splash?.durationSeconds) {
-        // v1.0.4：默认 5 秒；云端控制台配置了展示时长则严格跟随后台设定
-        mutableIntStateOf((splash?.durationSeconds ?: 5).coerceIn(1, 15))
+        // v1.1.18：默认 3 秒；云端控制台配置了展示时长则严格跟随后台设定
+        mutableIntStateOf((splash?.durationSeconds ?: 3).coerceIn(1, 15))
     }
-
-    // v1.1.10：控制台「主题工具箱」splash 组件主题（背景色可覆盖，控制台应用后实时生效）
-    val splashComp = ComponentThemeResolver.resolve(LocalComponentThemes.current, "splash")
 
     val entryScale = remember { Animatable(0.7f) }
     val entryAlpha = remember { Animatable(0f) }
@@ -150,546 +130,320 @@ fun SplashScreenOverlay(
         if (sp != null && (sp.type == "html" || sp.type == "media")) {
             CloudSplashContent(splash = sp, onDismiss = onDismiss)
         } else {
-        // ================= v1.0.4：CSS 粒子动态特效开屏 =================
-        // v1.0.13：开屏动画采用纯色背景（Color(0xFF0B0B1A) 深色纯色，跟随云端 bgColor 默认值），
-        // 粒子动态特效在纯色背景之上呈现，简洁清爽不花哨
-        // v1.1.10：控制台 splash 主题可覆盖背景色
+            ShengshiWaveSplashContent(
+                countdownSeconds = countdownSeconds,
+                onDismiss = onDismiss,
+                entryScale = entryScale,
+                entryAlpha = entryAlpha
+            )
+        }
+    }
+}
+
+/* =====================================================================
+ * 「盛世华诞 · 圆形波浪旋转加载器」开屏
+ * ===================================================================== */
+
+/** 盛世华诞主题色 */
+private val SsRed = Color(0xFFDE2910)          // 中国红
+private val SsGold = Color(0xFFFFD700)         // 烫金
+private val SsDeepRed = Color(0xFF450A0A)      // 深朱砂
+private val SsDarkRed = Color(0xFF7F1D1D)      // 熟褐红
+private val SsBloodRed = Color(0xFF991B1B)     // 中国红渐变段
+
+/** 五圈波浪环颜色（对应经典波浪加载器五色） */
+private val RingColors = listOf(
+    Color(0xFFFF006E), // 品红
+    Color(0xFFFF7B00), // 暖橙
+    Color(0xFFFFEA00), // 鎏金
+    Color(0xFF00FF88), // 荧光绿
+    Color(0xFF00D9FF)  // 冰青
+)
+
+/** 五圈波浪环尺寸（从外到内）与旋转速度 */
+private data class RingSpec(val size: Float, val durationMs: Int, val reverse: Boolean, val radius: FloatArray)
+
+@Composable
+private fun ShengshiWaveSplashContent(
+    countdownSeconds: Int,
+    onDismiss: () -> Unit,
+    entryScale: Animatable<Float, *>,
+    entryAlpha: Animatable<Float, *>
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(SsDarkRed, SsBloodRed, SsDeepRed)
+                )
+            )
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { onDismiss() }
+    ) {
+        // ---- 两团柔光光晕（左上红晕 / 右下金晕，漂浮呼吸）----
+        val floatT by rememberInfiniteTransition(label = "glow_float").animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(4000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "floatT"
+        )
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(splashComp?.backgroundColor ?: Color(0xFF0B0B1A))
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) { onDismiss() }
-        ) {
-            // ---- CSS 粒子动态特效层（粒子网络 + 星光 + 流星光束 + 流动光晕）----
-            ParticleSplashCanvas(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer { alpha = entryAlpha.value }
-            )
+                .size(420.dp)
+                .align(Alignment.TopStart)
+                .offset(y = (floatT * 40f).dp)
+                .graphicsLayer { alpha = 0.22f }
+                .background(
+                    Brush.radialGradient(
+                        listOf(Color(0xFFFF3B6E), Color.Transparent)
+                    ),
+                    shape = CircleShape
+                )
+        )
+        Box(
+            modifier = Modifier
+                .size(420.dp)
+                .align(Alignment.BottomEnd)
+                .offset(y = (-floatT * 40f).dp)
+                .graphicsLayer { alpha = 0.18f }
+                .background(
+                    Brush.radialGradient(
+                        listOf(Color(0xFFFFC24D), Color.Transparent)
+                    ),
+                    shape = CircleShape
+                )
+        )
 
-            // v1.0.12：全屏 CSS 渐变流光扫屏特效（柔光斜向掠过，背景透明呈现）
-            val beamAngle by rememberInfiniteTransition(label = "beam_angle").animateFloat(
-                initialValue = -1.2f,
-                targetValue = 1.2f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(5200, easing = LinearEasing),
-                    repeatMode = RepeatMode.Restart
-                ),
-                label = "beamAngle"
+        // ---- 右上角「跳过 3s」按钮 ----
+        Surface(
+            shape = RoundedCornerShape(20.dp),
+            color = Color.Black.copy(alpha = 0.35f),
+            border = androidx.compose.foundation.BorderStroke(1.dp, SsGold.copy(alpha = 0.65f)),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 44.dp, end = 20.dp)
+                .clickable { onDismiss() }
+        ) {
+            Text(
+                text = "跳过 $countdownSeconds s",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = SsGold,
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
             )
-            Canvas(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer { alpha = entryAlpha.value * 0.45f }
+        }
+
+        // ---- 中央加载器 ----
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .scale(entryScale.value)
+                .graphicsLayer { alpha = entryAlpha.value }
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(280.dp)
             ) {
-                val w = size.width
-                val h = size.height
-                val t = beamAngle
-                // 三道流光斜扫（位置随相位线性平移，形成连续扫屏光效）
-                for (k in 0 until 3) {
-                    val baseX = (t + k * 0.5f) * w * 1.8f - w * 0.6f
-                    drawLine(
-                        brush = Brush.linearGradient(
-                            colors = listOf(Color.Transparent, Color(0xFF00E5FF).copy(alpha = 0.16f), Color.Transparent),
-                            start = Offset(baseX, 0f),
-                            end = Offset(baseX + w * 0.5f, h)
-                        ),
-                        start = Offset(baseX, 0f),
-                        end = Offset(baseX + w * 0.5f, h),
-                        strokeWidth = w * 0.07f
+                // 五圈波浪环（各自旋转，方向交替）
+                val rings = remember {
+                    listOf(
+                        RingSpec(252f, 4000, false, floatArrayOf(42f, 58f, 70f, 30f)),
+                        RingSpec(207f, 5000, true, floatArrayOf(60f, 40f, 30f, 70f)),
+                        RingSpec(162f, 3500, false, floatArrayOf(30f, 70f, 70f, 30f)),
+                        RingSpec(117f, 6000, true, floatArrayOf(70f, 30f, 50f, 50f)),
+                        RingSpec(72f, 4500, false, floatArrayOf(50f, 50f, 30f, 70f))
                     )
                 }
-                // 一道暖金色柔光斜扫（更宽更淡）
-                val goldX = (t * 1.6f + 0.4f) * w * 1.6f - w * 0.5f
-                drawLine(
-                    brush = Brush.linearGradient(
-                        colors = listOf(Color.Transparent, Color(0xFFFFD54F).copy(alpha = 0.10f), Color.Transparent),
-                        start = Offset(goldX, 0f),
-                        end = Offset(goldX + w * 0.9f, h)
+                rings.forEachIndexed { i, spec ->
+                    WaveRing(spec = spec, index = i, color = RingColors[i])
+                }
+
+                // 环绕轨道四颗光点（公转）
+                val orbitAngle by rememberInfiniteTransition(label = "orbit").animateFloat(
+                    initialValue = 0f,
+                    targetValue = 360f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(3000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
                     ),
-                    start = Offset(goldX, 0f),
-                    end = Offset(goldX + w * 0.9f, h),
-                    strokeWidth = w * 0.13f
+                    label = "orbitAngle"
                 )
-            }
+                OrbitDots(angle = orbitAngle)
 
-            // 右上角跳过按钮
-            Surface(
-                shape = RoundedCornerShape(20.dp),
-                color = Color.White.copy(alpha = 0.1f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.22f)),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 44.dp, end = 20.dp)
-                    .clickable { onDismiss() }
-            ) {
-                Text(
-                    text = "跳过 $countdownSeconds s",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White.copy(alpha = 0.85f),
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                )
-            }
-
-            // 中心内容区
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .scale(entryScale.value)
-                    .graphicsLayer { alpha = entryAlpha.value }
-            ) {
+                // 中心金色核心：「懒得找了」流光标题
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(220.dp)
+                    modifier = Modifier
+                        .size(104.dp)
+                        .scale(corePulse)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.radialGradient(
+                                listOf(Color(0xFFFFF4C2), SsGold, Color(0xFFE8A200))
+                            )
+                        )
+                        .shadow(22.dp, CircleShape, ambientColor = SsGold, spotColor = SsGold)
                 ) {
-                    // v1.0.12：外圈超大旋转霓虹光环（sweep 渐变四色旋转，纯透明光效）
-                    val outerSpin by rememberInfiniteTransition(label = "outer_spin").animateFloat(
-                        initialValue = 0f,
-                        targetValue = 360f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(9000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Restart
-                        ),
-                        label = "outerSpin"
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(208.dp)
-                            .rotate(outerSpin)
-                            .clip(CircleShape)
-                            .border(
-                                width = 2.dp,
-                                brush = Brush.sweepGradient(
-                                    listOf(Color.Transparent, ElectricCyan, Color.Transparent, FlameRed, Color.Transparent, NeonPurple, Color.Transparent)
-                                ),
-                                shape = CircleShape
-                            )
-                    )
-                    // v1.0.12：外圈呼吸弥散光晕（更饱满的多彩呼吸）
-                    val haloPulse3 by rememberInfiniteTransition(label = "halo3").animateFloat(
-                        initialValue = 0.95f,
-                        targetValue = 1.65f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(2300, easing = FastOutSlowInEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "haloPulse3"
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(190.dp)
-                            .scale(haloPulse3)
-                            .clip(CircleShape)
-                            .background(
-                                Brush.radialGradient(
-                                    colors = listOf(
-                                        NeonPurple.copy(alpha = 0.26f),
-                                        SunsetOrange.copy(alpha = 0.10f),
-                                        Color.Transparent
-                                    )
-                                )
-                            )
-                    )
-
-                    // 呼吸脉冲光环 2（CSS box-shadow 风格扩散）
-                    val haloPulse2 by rememberInfiniteTransition(label = "halo2").animateFloat(
-                        initialValue = 0.9f,
-                        targetValue = 1.5f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(2000, easing = FastOutSlowInEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "haloPulse2"
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(160.dp)
-                            .scale(haloPulse2)
-                            .clip(CircleShape)
-                            .background(
-                                Brush.radialGradient(
-                                    colors = listOf(
-                                        ElectricCyan.copy(alpha = 0.22f),
-                                        NeonPurple.copy(alpha = 0.12f),
-                                        Color.Transparent
-                                    )
-                                )
-                            )
-                    )
-
-                    // 呼吸脉冲光环 1（渐变描边旋转）
-                    val haloPulse1 by rememberInfiniteTransition(label = "halo1").animateFloat(
-                        initialValue = 0.85f,
-                        targetValue = 1.35f,
+                    val corePulse by rememberInfiniteTransition(label = "core_pulse").animateFloat(
+                        initialValue = 1f,
+                        targetValue = 1.12f,
                         animationSpec = infiniteRepeatable(
                             animation = tween(1500, easing = FastOutSlowInEasing),
                             repeatMode = RepeatMode.Reverse
                         ),
-                        label = "haloPulse1"
+                        label = "corePulse"
                     )
-                    Box(
-                        modifier = Modifier
-                            .size(128.dp)
-                            .scale(haloPulse1)
-                            .clip(CircleShape)
-                            .border(
-                                width = 1.5.dp,
-                                brush = Brush.sweepGradient(
-                                    listOf(FlameRed, SunsetOrange, ElectricCyan, NeonPurple, FlameRed)
-                                ),
-                                shape = CircleShape
-                            )
-                    )
-
-                    // 3D 旋转立体水晶方块
-                    val rotationAngle by rememberInfiniteTransition(label = "rotation").animateFloat(
-                        initialValue = 0f,
-                        targetValue = 360f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(4000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Restart
-                        ),
-                        label = "rotationAngle"
-                    )
-                    Surface(
-                        shape = RoundedCornerShape(26.dp),
-                        shadowElevation = 14.dp,
-                        color = Color.Transparent,
-                        modifier = Modifier
-                            .size(92.dp)
-                            .graphicsLayer {
-                                rotationY = rotationAngle
-                                rotationX = 18f
-                                cameraDistance = 16 * density
-                            }
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    Brush.linearGradient(
-                                        colors = listOf(
-                                            FlameRed,
-                                            SunsetOrange,
-                                            NeonPurple
-                                        )
-                                    )
-                                )
-                                .border(
-                                    width = 2.dp,
-                                    brush = Brush.linearGradient(
-                                        listOf(Color.White.copy(alpha = 0.85f), Color.White.copy(alpha = 0.15f))
-                                    ),
-                                    shape = RoundedCornerShape(26.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.AutoAwesome,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .rotate(rotationAngle * 0.5f)
-                            )
-                        }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "懒得找了",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFF7A2E00),
+                            letterSpacing = 1.sp
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "LAZY FIND",
+                            fontSize = 6.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF9A5A00)
+                        )
                     }
                 }
+            }
 
-                // v1.1.12：开屏动画增加 UiverseDotsLoader 彩色弹跳圆点（草莓粉/琥珀/天蓝，2.5dp 墨色描边）
-                UiverseDotsLoader(
+            Spacer(modifier = Modifier.height(26.dp))
+
+            // 底部「加载中」文字 + 点点动画 + 副标语
+            val dotCount by remember { mutableIntStateOf(0) }
+            LaunchedEffect(Unit) {
+                while (true) {
+                    dotCount = (dotCount + 1) % 4
+                    delay(400)
+                }
+            }
+            Text(
+                text = "加载中" + ".".repeat(dotCount),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = SsGold,
+                letterSpacing = 4.sp
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "盛世华诞 · 愿祖国繁荣昌盛",
+                fontSize = 12.sp,
+                color = Color(0xFFFFE9A8).copy(alpha = 0.9f),
+                letterSpacing = 2.sp
+            )
+        }
+
+        // ---- 底部品牌标识 ----
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("懒得找了 · 海量资源一站导航", color = SsGold.copy(alpha = 0.9f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Text("Copyright © 2026 LazyFind Studio. All rights reserved.", color = Color.White.copy(alpha = 0.45f), fontSize = 10.sp)
+        }
+    }
+}
+
+/** 单圈波浪环（独立组合函数，内部持有自己的旋转/呼吸动画） */
+@Composable
+private fun WaveRing(spec: RingSpec, index: Int, color: Color) {
+    val angle by rememberInfiniteTransition(label = "ring_$index").animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(spec.durationMs, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "ringAngle$index"
+    )
+    val pulse by rememberInfiniteTransition(label = "ring_pulse_$index").animateFloat(
+        initialValue = 0.96f,
+        targetValue = 1.08f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1600 + index * 180, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "ringPulse$index"
+    )
+    val shape = RoundedCornerShape(
+        topStartPercent = spec.radius[0].toInt(),
+        topEndPercent = spec.radius[1].toInt(),
+        bottomEndPercent = spec.radius[2].toInt(),
+        bottomStartPercent = spec.radius[3].toInt()
+    )
+    Box(
+        modifier = Modifier
+            .size(spec.size.dp)
+            .scale(pulse)
+            .rotate(if (spec.reverse) -angle else angle)
+            .clip(shape)
+            .background(color.copy(alpha = 0.10f))
+            .border(3.dp, color, shape)
+            .shadow(
+                elevation = 18.dp,
+                shape = shape,
+                ambientColor = color,
+                spotColor = color
+            )
+    )
+}
+
+/** 环绕轨道四颗光点（沿方形轨道公转） */
+@Composable
+private fun OrbitDots(angle: Float) {
+    val dotColors = listOf(
+        Color(0xFFFF006E),
+        Color(0xFF00D9FF),
+        Color(0xFFFFEA00),
+        Color(0xFF00FF88)
+    )
+    Box(modifier = Modifier.size(220.dp)) {
+        // 四颗光点分别置于上/下/左/右，整体随 angle 旋转
+        val spin = angle
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .rotate(spin)
+        ) {
+            listOf(
+                Alignment.TopCenter to dotColors[0],
+                Alignment.BottomCenter to dotColors[1],
+                Alignment.CenterStart to dotColors[2],
+                Alignment.CenterEnd to dotColors[3]
+            ).forEach { (align, color) ->
+                Box(
                     modifier = Modifier
-                        .padding(top = 8.dp)
-                        .graphicsLayer { alpha = entryAlpha.value }
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                // 渐变标题 "懒得找了" + 流光微光（CSS text 流光效果）
-                val shimmerOffset by rememberInfiniteTransition(label = "shimmer").animateFloat(
-                    initialValue = -300f,
-                    targetValue = 600f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(2200, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart
-                    ),
-                    label = "shimmerOffset"
-                )
-                // v1.0.12：标题流光升级 + 柔和投影（透明背景上依旧清晰醒目）
-                Text(
-                    text = "懒得找了",
-                    fontSize = 34.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 2.sp,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        brush = Brush.linearGradient(
-                            colors = listOf(FlameRed, SunsetOrange, NeonPurple, ElectricCyan),
-                            start = Offset(shimmerOffset, 0f),
-                            end = Offset(shimmerOffset + 240f, 100f)
-                        )
-                    ),
-                    modifier = Modifier.shadow(
-                        elevation = 10.dp,
-                        shape = RoundedCornerShape(14.dp),
-                        ambientColor = NeonPurple.copy(alpha = 0.55f),
-                        spotColor = SunsetOrange.copy(alpha = 0.45f)
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // v1.0.4：动态文字——逐字浮现打字机效果 + 上下浮动 + 渐变流光
-                val splashDynamicText = "每天少走弯路 · 尽情探索互联网宝藏资源"
-                var typedCount by remember { mutableIntStateOf(0) }
-                LaunchedEffect(Unit) {
-                    while (typedCount < splashDynamicText.length) {
-                        delay(85)
-                        typedCount++
-                    }
-                }
-                val textFloatY by rememberInfiniteTransition(label = "text_float").animateFloat(
-                    initialValue = -5f,
-                    targetValue = 5f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1500, easing = FastOutSlowInEasing),
-                        repeatMode = RepeatMode.Reverse
-                    ),
-                    label = "textFloatY"
-                )
-                Text(
-                    text = splashDynamicText.take(typedCount) +
-                        (if (typedCount < splashDynamicText.length) "▌" else "✨"),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 1.sp,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        brush = Brush.linearGradient(
-                            colors = listOf(SunsetOrange, NeonPurple, ElectricCyan),
-                            start = Offset(shimmerOffset, 0f),
-                            end = Offset(shimmerOffset + 160f, 60f)
-                        )
-                    ),
-                    modifier = Modifier.graphicsLayer {
-                        translationY = textFloatY * density
-                        alpha = entryAlpha.value
-                    }
+                        .align(align)
+                        .size(9.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .shadow(8.dp, CircleShape, ambientColor = color, spotColor = color)
                 )
             }
-        }
         }
     }
 }
 
-/** 粒子网络数据（固定随机，仅颜色/坐标/尺寸/连线关系） */
-private data class SplashParticle(
-    val x: Float,
-    val y: Float,
-    val speed: Float,
-    val size: Float,
-    val depth: Int,      // 0：近（亮大） 1：远（暗小）
-    val hue: Int,        // 0..3 对应色板
-    val phase: Float     // 相位偏移（呼吸/连线用）
-)
+/* =====================================================================
+ * 云端开屏分支（type=html / media，控制台可切换，保留）
+ * ===================================================================== */
 
-// v1.0.12：色板全面扩充——新增金色/翠青/日光黄，粒子色彩更绚丽
-private val SPLASH_COLORS = listOf(
-    Color(0xFFFF6B9D),   // 粉
-    Color(0xFFFFB199),   // 蜜桃橙
-    Color(0xFF00E5FF),   // 电光青
-    Color(0xFF7C4DFF),   // 霓虹紫
-    Color(0xFFFFD54F),   // 鎏金
-    Color(0xFF4DD0E1),   // 翠青
-    Color(0xFF69F0AE)    // 荧光绿
-)
-
-/**
- * CSS 风格粒子动态特效画布：
- * - 上百颗粒子沿各自方向漂移（负方向回流，形成连绵不绝的粒子流）
- * - 近邻粒子之间绘制动态连线（距离越近越亮），模拟 particles.js 网络特效
- * - 少量大粒子带光晕，模拟星光
- * - 两路 phase 叠加出无规律、可循环的流动
- */
-@Composable
-private fun ParticleSplashCanvas(modifier: Modifier = Modifier) {
-    // v1.0.12：粒子数升级 132 → 240 颗，画面更饱满（固定随机，尺寸用 dp 值，绘制时转 px）
-    val particles = remember {
-        List(240) { i ->
-            SplashParticle(
-                x = Random.nextFloat(),
-                y = Random.nextFloat(),
-                speed = 0.008f + Random.nextFloat() * 0.02f,
-                size = if (Random.nextFloat() < 0.12f) (2.6f + Random.nextFloat() * 2.2f) else (1.0f + Random.nextFloat() * 1.8f),
-                depth = if (i % 5 == 0) 0 else 1,
-                hue = Random.nextInt(SPLASH_COLORS.size),
-                phase = Random.nextFloat() * 6.283f
-            )
-        }
-    }
-    // v1.0.12：连线对数升级 96 → 150 对，粒子网络更密集（固定），保证任意时刻画布上都有网络感
-    val links = remember {
-        val pairs = mutableListOf<Pair<Int, Int>>()
-        var guard = 0
-        while (pairs.size < 150 && guard < 6000) {
-            guard++
-            val a = Random.nextInt(particles.size)
-            val b = Random.nextInt(particles.size)
-            if (a != b && pairs.none { (x, y) -> (x == a && y == b) || (x == b && y == a) }) {
-                pairs.add(a to b)
-            }
-        }
-        pairs
-    }
-
-    val transition = rememberInfiniteTransition(label = "particle_network")
-    val phaseA by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(9000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "phase_a"
-    )
-    val phaseB by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(13000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "phase_b"
-    )
-
-    Canvas(modifier = modifier) {
-        val w = size.width
-        val h = size.height
-        val cx = w / 2f
-        val cy = h / 2f
-
-        // 双相位归一化坐标（0..1 流动）
-        val ta = phaseA
-        val tb = phaseB
-
-        // ---- 1) 大背景光晕（暗紫蓝，随粒子的流动微移）----
-        drawCircle(
-            brush = Brush.radialGradient(
-                colors = listOf(
-                    NeonPurple.copy(alpha = 0.10f),
-                    ElectricCyan.copy(alpha = 0.05f),
-                    Color.Transparent
-                ),
-                center = Offset(cx + (ta - 0.5f) * w * 0.2f, cy + (tb - 0.5f) * h * 0.2f),
-                radius = w * 0.85f
-            )
-        )
-
-        // ---- 2) 粒子坐标计算：x = (origX + tA*speedA) mod 1, y 用 tB 慢漂 ----
-        val pts = FloatArray(particles.size * 2)
-        particles.forEachIndexed { i, p ->
-            val dir = (if (i % 2 == 0) 1 else -1)
-            var px = p.x + ta * p.speed * dir
-            var py = p.y + tb * p.speed * 0.6f
-            // 回流（取模保持 0..1）
-            px = (px % 1.0f + 1.0f) % 1.0f
-            py = (py % 1.0f + 1.0f) % 1.0f
-            pts[i * 2] = px
-            pts[i * 2 + 1] = py
-        }
-
-        // ---- 3) 粒子间连线（近邻闪烁，CSS 网络特效）----
-        for ((a, b) in links) {
-            val ax = pts[a * 2] * w
-            val ay = pts[a * 2 + 1] * h
-            val bx = pts[b * 2] * w
-            val by = pts[b * 2 + 1] * h
-            val dx = ax - bx
-            val dy = ay - by
-            val dist = kotlin.math.sqrt(dx * dx + dy * dy)
-            val maxDist = w * 0.16f
-            if (dist < maxDist) {
-                val fade = (1f - dist / maxDist).coerceIn(0f, 1f)
-                // 呼吸闪烁
-                val breathe = (0.5f + 0.5f * sin((ta + tb) * 6.283f).toFloat())
-                val alpha = fade * (0.10f + 0.20f * breathe)
-                drawLine(
-                    color = Color(0xFF8B5CF6).copy(alpha = alpha),
-                    start = Offset(ax, ay),
-                    end = Offset(bx, by),
-                    strokeWidth = 1f * density
-                )
-            }
-        }
-
-        // ---- 4) 绘制粒子（近景大星带四向十字星光，远景小星呼吸闪烁）----
-        particles.forEachIndexed { i, p ->
-            val px = pts[i * 2] * w
-            val py = pts[i * 2 + 1] * h
-            val color = SPLASH_COLORS[p.hue]
-            val breathe = 0.5f + 0.5f * sin((ta + tb) * 6.283f + p.phase).toFloat()
-            if (p.depth == 0) {
-                // 近景大星：光晕 + 高亮 + 十字星光（v1.0.12 新增）
-                val r = p.size * density * (0.9f + 0.25f * breathe)
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(color.copy(alpha = 0.55f), color.copy(alpha = 0.06f), Color.Transparent),
-                        center = Offset(px, py),
-                        radius = r * 3f
-                    ),
-                    radius = r * 3f,
-                    center = Offset(px, py)
-                )
-                drawCircle(color = color, radius = r, center = Offset(px, py))
-                // 十字星光射线（四向星芒）
-                val rayLen = r * (2.2f + 1.2f * breathe)
-                for (d in 0 until 4) {
-                    val ang = (d * 45f) * (3.14159265f / 180f)
-                    val ex = px + kotlin.math.cos(ang) * rayLen
-                    val ey = py + kotlin.math.sin(ang) * rayLen
-                    drawLine(
-                        color = color.copy(alpha = 0.28f * (0.6f + 0.4f * breathe)),
-                        start = Offset(px, py),
-                        end = Offset(ex, ey),
-                        strokeWidth = 1f * density
-                    )
-                }
-            } else {
-                drawCircle(
-                    color = color.copy(alpha = 0.22f + 0.25f * breathe),
-                    radius = p.size * density,
-                    center = Offset(px, py)
-                )
-            }
-        }
-
-        // ---- 5) v1.0.12：流星光束（数道彩色光点沿斜向快速划过，带拖尾渐变）----
-        for (m in 0 until 4) {
-            val mt = ((ta * 1.1f + m * 0.27f) % 1.0f + 1.0f) % 1.0f
-            val mx = mt * w * 1.25f - w * 0.12f
-            val my = (0.12f + mt * 0.75f) * h
-            val mColor = SPLASH_COLORS[(m * 2 + 1) % SPLASH_COLORS.size]
-            val tail = w * 0.10f
-            drawLine(
-                brush = Brush.linearGradient(
-                    colors = listOf(Color.Transparent, mColor.copy(alpha = 0.65f)),
-                    start = Offset(mx - tail, my),
-                    end = Offset(mx, my)
-                ),
-                start = Offset(mx - tail, my),
-                end = Offset(mx, my),
-                strokeWidth = 1.6f * density
-            )
-            drawCircle(color = mColor.copy(alpha = 0.9f), radius = 1.8f * density, center = Offset(mx, my))
-        }
-    }
-}
-
-@Composable
 private fun CloudSplashContent(
     splash: SplashDto,
     onDismiss: () -> Unit
@@ -769,6 +523,6 @@ private fun parseHexColor(hex: String): Color {
             alpha = 1f
         )
     } catch (e: Exception) {
-        Color(0xFF0B0B1A)
+        Color(0xFF450A0A)
     }
 }

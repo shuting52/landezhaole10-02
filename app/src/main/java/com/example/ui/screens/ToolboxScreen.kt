@@ -37,8 +37,14 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.SentimentSatisfied
+import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,15 +78,20 @@ import com.example.ui.components.UiversePink
 import com.example.ui.components.UiverseTextMuted
 import com.example.ui.components.UiverseTrack
 import com.example.ui.components.neoShadow
+import com.example.ui.screens.toolbox.AlipayVoiceSection
+import com.example.ui.screens.toolbox.ColdJokeSection
+import com.example.ui.screens.toolbox.CustomToolsSection
 import com.example.ui.screens.toolbox.EmergencyPhoneSection
+import com.example.ui.screens.toolbox.EnvCheckSection
 import com.example.ui.screens.toolbox.FoodPickerScreenView
+import com.example.ui.screens.toolbox.LicensePlateSection
 import com.example.ui.screens.toolbox.MouthpieceSection
 import com.example.ui.screens.toolbox.OfflineTreasureSection
+import com.example.ui.screens.toolbox.SpeedTestSection
 
 /**
- * 工具箱（v1.0.4 精简版）：
- * 只保留 4 个精工具（嘴强嘴替 / 年龄推算 / 离线百宝 / 今天吃什么）+ 紧急电话新工具。
- * 其余工具及其代码/记录已全面删除。
+ * 工具箱（v1.1.18 扩充）：
+ * 5 个经典精工具 + 5 个新工具（我的工具夹 / 支付宝到账语音 / 车牌摇号 / 冷笑话 / 测速网）
  */
 enum class ToolboxTab(
     val title: String,
@@ -117,6 +128,43 @@ enum class ToolboxTab(
         shortLabel = "紧急电话",
         icon = Icons.Filled.Call,
         desc = "救援/道路/举报/法律 · 一键快捷呼出 · 全国通用守护平安"
+    ),
+    // ========== v1.1.18 新增 5 工具 ==========
+    CUSTOM_TOOLS(
+        title = "我的工具夹 · 老师/上班/记录",
+        shortLabel = "我的工具夹",
+        icon = Icons.Filled.Work,
+        desc = "列表形式 · 老师用/上班用/记录用 · 可任意添加编辑删除"
+    ),
+    ALIPAY_VOICE(
+        title = "支付宝到账语音",
+        shortLabel = "到账语音",
+        icon = Icons.Filled.PlayArrow,
+        desc = "输入金额 · 生成到账播报 · 预览/播放语音"
+    ),
+    LICENSE_PLATE(
+        title = "车牌摇号 · 好运加持",
+        shortLabel = "车牌摇号",
+        icon = Icons.Filled.DirectionsCar,
+        desc = "选号设置 · 号牌池 · 一键摇号 · 燃油/新能源"
+    ),
+    COLD_JOKE(
+        title = "冷笑话 · 一键开心",
+        shortLabel = "冷笑话",
+        icon = Icons.Filled.SentimentSatisfied,
+        desc = "随机冷笑话 · 一键分享到聊天/短视频平台"
+    ),
+    SPEED_TEST(
+        title = "测速网 · 真实测速",
+        shortLabel = "测速网",
+        icon = Icons.Filled.Speed,
+        desc = "真实下载测速 · Ping 延迟 · 当前位置定位"
+    ),
+    ENV_CHECK(
+        title = "环境检测 · ping0.cc",
+        shortLabel = "环境检测",
+        icon = Icons.Filled.Public,
+        desc = "IP 地址 · 地理位置 · 代理/VPN · 网络类型一键检测"
     )
 }
 
@@ -274,6 +322,13 @@ fun ToolboxScreen(
                                 ToolboxTab.OFFLINE_TREASURE -> OfflineTreasureScreenView()
                                 ToolboxTab.FOOD_PICKER -> FoodPickerScreenView()
                                 ToolboxTab.EMERGENCY_PHONE -> EmergencyPhoneSection()
+                                // v1.1.18 新增
+                                ToolboxTab.CUSTOM_TOOLS -> CustomToolsSection()
+                                ToolboxTab.ALIPAY_VOICE -> AlipayVoiceSection()
+                                ToolboxTab.LICENSE_PLATE -> LicensePlateSection()
+                                ToolboxTab.COLD_JOKE -> ColdJokeSection()
+                                ToolboxTab.SPEED_TEST -> SpeedTestSection()
+                                ToolboxTab.ENV_CHECK -> EnvCheckSection()
                             }
                         }
                     }
