@@ -3,6 +3,7 @@
     "code": 127,
     "name": "1.2.2",
     "changelog": [
+      "【23:02】更新Skill「猫咪和小主人」",
       "【23:02】更新Skill「音乐节海报专业版」",
       "【23:02】更新Skill「音乐节海报专业版」",
       "【23:01】更新Skill「变装带货」",
@@ -13,8 +14,7 @@
       "【22:53】新增Skill「音乐节海报专业版」",
       "【22:51】新增软件「豆包去水印」",
       "【22:49】删除Skill「僵尸女友」",
-      "【22:49】删除Skill「卡点变装」",
-      "【22:49】删除Skill「Robolectric 极速本地无头单元测试」"
+      "【22:49】删除Skill「卡点变装」"
     ],
     "force": false,
     "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.2-1791033079.apk",
@@ -22893,6 +22893,20 @@
       "previewUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/uploads/1791039560741_Screenshot_2026_1003_225846.png",
       "iconUrl": "https://www.google.com/s2/favicons?domain=raw.githubusercontent.com&sz=128",
       "mode": "file"
+    },
+    {
+      "id": "sw_musj7kob2o74",
+      "type": "software",
+      "title": "简影",
+      "desc": "一款老牌特效软件",
+      "url": "",
+      "author": "",
+      "badge": "",
+      "tags": "",
+      "apkUrl": "",
+      "previewUrl": "",
+      "iconUrl": "",
+      "mode": "file"
     }
   ],
   "skills": [
@@ -23017,6 +23031,7 @@
   "updateDialog": {
     "title": "懒得找了 v1.1.4 已上线",
     "changelog": [
+      "【23:02】更新Skill「猫咪和小主人」",
       "【23:02】更新Skill「音乐节海报专业版」",
       "【23:02】更新Skill「音乐节海报专业版」",
       "【23:01】更新Skill「变装带货」",
@@ -23027,8 +23042,7 @@
       "【22:53】新增Skill「音乐节海报专业版」",
       "【22:51】新增软件「豆包去水印」",
       "【22:49】删除Skill「僵尸女友」",
-      "【22:49】删除Skill「卡点变装」",
-      "【22:49】删除Skill「Robolectric 极速本地无头单元测试」"
+      "【22:49】删除Skill「卡点变装」"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
