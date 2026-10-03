@@ -35,14 +35,15 @@ class RemoteConfigRepository(private val context: Context) {
 
     // GitHub API 直读（无 CDN 缓存，实时，但匿名限 60 次/小时/IP）
     private val apiUrl = "https://api.github.com/repos/$owner/$repo/contents/$filePath?ref=$branch"
-    // 只读镜像链（国内网络下 cdn.jsdelivr.net 主站可能被 DNS 污染，多节点顺延）
+    // 只读镜像链（v1.1.23：实时代理优先——jsDelivr 有缓存延迟且国内不稳；ghfast/ghproxy 走 raw 实时代理）
     private val mirrorUrls = listOf(
+        "https://ghfast.top/https://raw.githubusercontent.com/$owner/$repo/$branch/$filePath",
+        "https://ghproxy.net/https://raw.githubusercontent.com/$owner/$repo/$branch/$filePath",
+        "https://cdn.jsdmir.cn/gh/$owner/$repo@$branch/$filePath",
         "https://testingcf.jsdelivr.net/gh/$owner/$repo@$branch/$filePath",
         "https://cdn.jsdelivr.net/gh/$owner/$repo@$branch/$filePath",
         "https://fastly.jsdelivr.net/gh/$owner/$repo@$branch/$filePath",
         "https://gcore.jsdelivr.net/gh/$owner/$repo@$branch/$filePath",
-        "https://ghfast.top/https://raw.githubusercontent.com/$owner/$repo/$branch/$filePath",
-        "https://ghproxy.net/https://raw.githubusercontent.com/$owner/$repo/$branch/$filePath",
         "https://raw.gitmirror.com/$owner/$repo/$branch/$filePath",
         "https://raw.githubusercontent.com/$owner/$repo/$branch/$filePath"
     )

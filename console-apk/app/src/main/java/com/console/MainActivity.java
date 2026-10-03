@@ -260,8 +260,8 @@ public class MainActivity extends Activity {
         }
         File apkFile = new File(dir, safeName);
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setConnectTimeout(15000);
-        conn.setReadTimeout(120000);
+        conn.setConnectTimeout(8000);
+        conn.setReadTimeout(20000);
         conn.setInstanceFollowRedirects(true);
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android) YuntaiUpdater/1.1");
         int code = conn.getResponseCode();
@@ -296,10 +296,9 @@ public class MainActivity extends Activity {
         return apkFile;
     }
 
-    /** 备用镜像：raw.githubusercontent.com -> jsDelivr CDN 多节点 + 国内镜像（v1.0.15 增强） */
+    /** 备用镜像：国内加速镜像/ jsDelivr CDN 优先，raw.githubusercontent.com 最后（v1.1.23 调整顺序） */
     private List<String> mirrorCandidates(String url) {
         List<String> list = new ArrayList<>();
-        if (url != null && !url.isEmpty()) list.add(url);
         try {
             String marker = "raw.githubusercontent.com/";
             if (url != null && url.contains(marker)) {
@@ -307,16 +306,21 @@ public class MainActivity extends Activity {
                 String[] parts = rest.split("/", 4);
                 if (parts.length == 4) {
                     String gh = parts[0] + "/" + parts[1] + "@" + parts[2] + "/" + parts[3];
-                    // jsDelivr 多节点（主站被 DNS 污染时尝试备用节点）
+                    // 国内加速镜像（优先，速度快）
+                    list.add("https://ghfast.top/https://raw.githubusercontent.com/" + rest);
+                    list.add("https://ghproxy.net/https://raw.githubusercontent.com/" + rest);
+                    list.add("https://cdn.jsdmir.cn/gh/" + gh);
+                    // jsDelivr 多节点
                     list.add("https://testingcf.jsdelivr.net/gh/" + gh);
                     list.add("https://cdn.jsdelivr.net/gh/" + gh);
                     list.add("https://fastly.jsdelivr.net/gh/" + gh);
                     list.add("https://gcore.jsdelivr.net/gh/" + gh);
-                    // 国内加速镜像（raw 代理）
-                    list.add("https://ghfast.top/https://raw.githubusercontent.com/" + rest);
-                    list.add("https://ghproxy.net/https://raw.githubusercontent.com/" + rest);
                     list.add("https://raw.gitmirror.com/" + rest);
+                    // GitHub 官方 raw（最后兜底）
+                    list.add(url);
                 }
+            } else if (url != null && !url.isEmpty()) {
+                list.add(url);
             }
         } catch (Exception ignored) {
         }

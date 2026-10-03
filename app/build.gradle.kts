@@ -64,8 +64,9 @@ android {
     // v1.1.20：站点卡片改浅粉→浅紫→浅蓝静态渐变背景+黑色文字（移除彩虹旋转白覆盖）
     // v1.1.21：修复渐变不生效——global.css 纯白背景触发 CUSTOM 时也改用渐变+黑字
     // v1.1.22：卡片恢复金色描边 · 底部Tab放大1.4倍 · 纯白背景强制恢复经典皮肤胶囊渐变
-    versionCode = 122
-    versionName = "1.1.22"
+    // v1.1.23：更新下载提速——国内镜像优先+超时缩短 · 控制台连接提速 · WiFi/流量识别下载
+    versionCode = 123
+    versionName = "1.1.23"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

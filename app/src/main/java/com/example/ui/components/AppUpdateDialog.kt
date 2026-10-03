@@ -265,8 +265,9 @@ fun AppUpdateDialog(
     suspend fun downloadWithProgress(url: String, onProgress: suspend (Float) -> Unit): File {
         return withContext(kotlinx.coroutines.Dispatchers.IO) {
             val client = okhttp3.OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(120, TimeUnit.SECONDS)
+                // v1.1.23：大幅缩短超时——raw/镜像连接慢时快速失败切换到下一源，不再卡 120 秒
+                .connectTimeout(8, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
                 .followRedirects(true)
                 .followSslRedirects(true)
                 .retryOnConnectionFailure(true)
@@ -336,24 +337,33 @@ fun AppUpdateDialog(
             statusLabel = "正在下载更新…"
             progress = 6f
 
+            // v1.1.23：源顺序调整为「国内镜像优先，raw 最后」——raw.githubusercontent.com 国内直连极慢
+            // 会导致进度条卡在 8% 等待超时；先走 ghfast/ghproxy/jsdmir/jsdelivr 等加速通道
             val candidates = buildList {
-                add(url)
                 Regex("^https?://raw\\.githubusercontent\\.com/([^/]+)/([^/]+)/(?:main|master)/(.+)$")
                     .find(url)?.let { m ->
                         val owner = m.groupValues[1]
                         val repo = m.groupValues[2]
                         val path = m.groupValues[3]
-                        add("https://cdn.jsdelivr.net/gh/$owner/$repo@main/$path")
-                        add("https://testingcf.jsdelivr.net/gh/$owner/$repo@main/$path")
-                        add("https://gcore.jsdelivr.net/gh/$owner/$repo@main/$path")
-                        add("https://github.com/$owner/$repo/raw/main/$path")
-                        add("https://cdn.jsdmir.cn/gh/$owner/$repo@main/$path")
-                        // v1.0.19 增加国内可用加速镜像，提升下载成功率
+                        // 国内加速镜像（优先，速度快）
                         add("https://ghfast.top/https://raw.githubusercontent.com/$owner/$repo/main/$path")
                         add("https://ghproxy.net/https://raw.githubusercontent.com/$owner/$repo/main/$path")
+                        add("https://cdn.jsdmir.cn/gh/$owner/$repo@main/$path")
+                        // jsDelivr 多节点
+                        add("https://testingcf.jsdelivr.net/gh/$owner/$repo@main/$path")
+                        add("https://cdn.jsdelivr.net/gh/$owner/$repo@main/$path")
+                        add("https://gcore.jsdelivr.net/gh/$owner/$repo@main/$path")
                         add("https://raw.gitmirror.com/$owner/$repo/main/$path")
+                        // GitHub 官方 raw（最后兜底）
+                        add("https://github.com/$owner/$repo/raw/main/$path")
+                        add(url)
                     }
             }.distinct()
+
+            // v1.1.23：WiFi/流量识别——移动流量时先提示（APK 约 17MB，避免流量超额）
+            if (com.example.data.util.NetworkTypeDetector.isMobile(context)) {
+                statusLabel = "当前为移动流量，开始下载更新包（约 17MB）…"
+            }
 
             var success = false
             var lastError: Exception? = null
