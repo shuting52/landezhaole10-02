@@ -1,16 +1,16 @@
 {
  "version": {
-  "code": 125,
-  "name": "1.2.0",
+  "code": 126,
+  "name": "1.2.1",
   "changelog": [
-   "✨ v1.2.0 大版本更新来啦～",
-   "【渐变颜色主题】新增 11 款柔和渐变主题：落日橘粉/海洋蓝/薄荷奶绿/薰衣草紫/樱花粉/天空蓝/蜜桃甜橙/极光绿/玫瑰金/柠檬黄/星云蓝紫，主题外观里一键切换",
-   "【动态效果主题】新增 10 款动态背景效果：手绘风/贴纸风/潮流风/国庆风/新拟物风/Q版卡通/极光/萤火/飘雪/细雨，可叠加在任意主题上",
-   "【入口】设置 → 主题外观 弹窗新增「渐变颜色主题」「动态效果主题」两个区块，点击即应用"
+   "✨ v1.2.1 更新来啦～",
+   "【修复】主题外观闪退问题已修复（渐变颜色主题/动态效果主题/自定义背景均可正常打开切换）",
+   "【移除】工具箱移除「到账语音」「雨声助眠」两个工具",
+   "【优化】主题切换弹窗更稳定，滚动流畅"
   ],
   "force": false,
-  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.0-1791029923.apk",
-  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.2.0-1791029923.apk"
+  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.1-1791031158.apk",
+  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.2.1-1791031158.apk"
  },
  "home": {
   "categories": [
