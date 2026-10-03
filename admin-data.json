@@ -4,6 +4,7 @@
     "name": "1.2.2",
     "changelog": [
       "【23:02】更新Skill「音乐节海报专业版」",
+      "【23:02】更新Skill「音乐节海报专业版」",
       "【23:01】更新Skill「变装带货」",
       "【22:59】更新软件「豆包去水印」",
       "【22:57】新增Skill「变装带货」",
@@ -13,8 +14,7 @@
       "【22:51】新增软件「豆包去水印」",
       "【22:49】删除Skill「僵尸女友」",
       "【22:49】删除Skill「卡点变装」",
-      "【22:49】删除Skill「Robolectric 极速本地无头单元测试」",
-      "【22:49】删除Skill「Gemini 顶级 Prompt 提示词工程」"
+      "【22:49】删除Skill「Robolectric 极速本地无头单元测试」"
     ],
     "force": false,
     "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.2-1791033079.apk",
@@ -22921,8 +22921,8 @@
       "prompt": "",
       "url": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/uploads/1791039289687_猫咪和小主人.zip",
       "author": "懒得找了",
-      "badge": "",
-      "tags": "Skill技能",
+      "badge": "强烈推荐",
+      "tags": "生成土味情话的邵氏风格",
       "previewUrl": "",
       "mediaUrl": "",
       "iconUrl": "",
@@ -23018,6 +23018,7 @@
     "title": "懒得找了 v1.1.4 已上线",
     "changelog": [
       "【23:02】更新Skill「音乐节海报专业版」",
+      "【23:02】更新Skill「音乐节海报专业版」",
       "【23:01】更新Skill「变装带货」",
       "【22:59】更新软件「豆包去水印」",
       "【22:57】新增Skill「变装带货」",
@@ -23027,8 +23028,7 @@
       "【22:51】新增软件「豆包去水印」",
       "【22:49】删除Skill「僵尸女友」",
       "【22:49】删除Skill「卡点变装」",
-      "【22:49】删除Skill「Robolectric 极速本地无头单元测试」",
-      "【22:49】删除Skill「Gemini 顶级 Prompt 提示词工程」"
+      "【22:49】删除Skill「Robolectric 极速本地无头单元测试」"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
