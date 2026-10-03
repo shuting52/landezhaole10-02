@@ -3,6 +3,7 @@
     "code": 127,
     "name": "1.2.2",
     "changelog": [
+      "【22:51】新增软件「豆包去水印」",
       "【22:49】删除Skill「僵尸女友」",
       "【22:49】删除Skill「卡点变装」",
       "【22:49】删除Skill「Robolectric 极速本地无头单元测试」",
@@ -13,8 +14,7 @@
       "【22:47】删除软件「PotPlayer 64bit 绿色优化版」",
       "【22:44】删除Skill「系统桌面趣味视频」",
       "【22:43】更新Skill「夏林果真人IP封面」",
-      "【22:41】删除软件「红果短剧」",
-      "【22:41】删除软件「NetShort 短剧」"
+      "【22:41】删除软件「红果短剧」"
     ],
     "force": false,
     "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.2-1791033079.apk",
@@ -22895,7 +22895,24 @@
       "mode": "file"
     }
   ],
-  "skills": [],
+  "skills": [
+    {
+      "id": "sk_musihii5qpd8",
+      "type": "skill",
+      "promptType": "skill",
+      "title": "音乐节海报专业版",
+      "desc": "将压缩包丢给任意一款AI Agent即可",
+      "prompt": "",
+      "url": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/uploads/1791039142527_音乐节海报专业版.zip",
+      "author": "懒得找了",
+      "badge": "",
+      "tags": "技能 资源包 ZIP",
+      "previewUrl": "",
+      "mediaUrl": "",
+      "iconUrl": "",
+      "mode": "file"
+    }
+  ],
   "settings": {
     "appName": "懒得找了",
     "slogan": "精选AI工具导航、Prompt效果图预览与手机应用无限多开分身百宝箱",
@@ -22968,6 +22985,7 @@
   "updateDialog": {
     "title": "懒得找了 v1.1.4 已上线",
     "changelog": [
+      "【22:51】新增软件「豆包去水印」",
       "【22:49】删除Skill「僵尸女友」",
       "【22:49】删除Skill「卡点变装」",
       "【22:49】删除Skill「Robolectric 极速本地无头单元测试」",
@@ -22978,8 +22996,7 @@
       "【22:47】删除软件「PotPlayer 64bit 绿色优化版」",
       "【22:44】删除Skill「系统桌面趣味视频」",
       "【22:43】更新Skill「夏林果真人IP封面」",
-      "【22:41】删除软件「红果短剧」",
-      "【22:41】删除软件「NetShort 短剧」"
+      "【22:41】删除软件「红果短剧」"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
