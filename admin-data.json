@@ -3,6 +3,7 @@
     "code": 127,
     "name": "1.2.2",
     "changelog": [
+      "【22:57】新增Skill「变装带货」",
       "【22:56】新增Skill「猫咪和小主人」",
       "【22:53】更新Skill「音乐节海报专业版」",
       "【22:53】新增Skill「音乐节海报专业版」",
@@ -13,8 +14,7 @@
       "【22:49】删除Skill「Gemini 顶级 Prompt 提示词工程」",
       "【22:49】删除Skill「Clean Architecture 架构设计指南」",
       "【22:49】删除Skill「生日祝福Skill」",
-      "【22:48】删除Skill「夏林果真人IP封面」",
-      "【22:47】删除软件「PotPlayer 64bit 绿色优化版」"
+      "【22:48】删除Skill「夏林果真人IP封面」"
     ],
     "force": false,
     "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.2.2-1791033079.apk",
@@ -22890,7 +22890,7 @@
       "badge": "最新版",
       "tags": "软件 安装包 APK",
       "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/1791039003132_豆包去水印助手-1.apk",
-      "previewUrl": "",
+      "previewUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/uploads/1791039560741_Screenshot_2026_1003_225846.png",
       "iconUrl": "https://www.google.com/s2/favicons?domain=raw.githubusercontent.com&sz=128",
       "mode": "file"
     }
@@ -23017,6 +23017,7 @@
   "updateDialog": {
     "title": "懒得找了 v1.1.4 已上线",
     "changelog": [
+      "【22:57】新增Skill「变装带货」",
       "【22:56】新增Skill「猫咪和小主人」",
       "【22:53】更新Skill「音乐节海报专业版」",
       "【22:53】新增Skill「音乐节海报专业版」",
@@ -23027,8 +23028,7 @@
       "【22:49】删除Skill「Gemini 顶级 Prompt 提示词工程」",
       "【22:49】删除Skill「Clean Architecture 架构设计指南」",
       "【22:49】删除Skill「生日祝福Skill」",
-      "【22:48】删除Skill「夏林果真人IP封面」",
-      "【22:47】删除软件「PotPlayer 64bit 绿色优化版」"
+      "【22:48】删除Skill「夏林果真人IP封面」"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
