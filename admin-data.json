@@ -1,24 +1,19 @@
 {
   "version": {
-    "code": 114,
-    "name": "1.1.14",
+    "code": 115,
+    "name": "1.1.15",
     "changelog": [
-      "【03:48】更新开屏动画配置（默认/自定义模式）",
-      "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【03:48】更新开屏动画配置（默认/自定义模式）",
-      "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【14:59】更新主题工具箱组件样式",
-      "【14:58】更新主题工具箱组件样式",
-      "【14:58】更新主题工具箱组件样式",
-      "✨ v1.1.4 全面升级来啦～"
+      "✨ v1.1.15 更新来啦～",
+      "【修复】恢复默认经典皮肤，修复白底绿字问题",
+      "【优化】底部 Tab 更小巧精致",
+      "【修复】公告栏跑马灯稳定常驻，不再时有时无",
+      "【修复】删除软件/Skill 后实时同步，不再复活",
+      "【修正】Skill 版块大小写统一",
+      "【新增】工具箱 18 个新工具：极简记账/我的物品/帮我做决定/数日子/随手记/计算器+/小日常/时间计算/数字时钟/计分板/补光灯/拼图/照相馆/提词器/汇率换算/单位换算/材料计算器 + 起点集50+工具"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.14-1790971395.apk",
-    "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.14-1790971395.apk"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.15-1790995730.apk",
+    "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.15-1790995730.apk"
   },
   "home": {
     "categories": [
@@ -23195,7 +23190,7 @@
   "console": {
     "version": "1.0.20",
     "code": 45,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/console/console-apk-v1.0.20-1790969872.apk"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/console/console-apk-v1.0.20-1790995730.apk"
   },
   "ipMonitor": {
     "enabled": false,
