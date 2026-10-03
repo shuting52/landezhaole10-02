@@ -274,13 +274,9 @@ fun MainScreen(
                             )
                         }
 
-                        // v1.1.14：恢复首页顶部公告栏跑马灯功能（公告内容来自云端控制台 marquee，可自定义开关与文案）
-                        item(span = { GridItemSpan(3) }) {
-                            com.nationalday.ui.common.NationalDayNoticeTicker(
-                                notice = uiState.cloudMarquee?.defaultText?.takeIf { it.isNotBlank() }
-                                    ?: "欢迎使用懒得找了～海量白嫖资源等你探索，遇到问题请到官方群反馈！"
-                            )
-                        }
+                        // v1.1.15 修复「公告栏跑马灯时有时无」：首页仅保留公告栏跑马灯（HeaderBrandSection 内 MarqueeNoticeWidget，
+                        // 受云端控制、24 小时轮播、常驻顶部不随滚动消失）；移除 v1.1.14 误加的重复红色 NationalDayNoticeTicker 条，
+                        // 避免双跑马灯重复/混乱/随列表回收消失。
 
                         // 2. 随心抽按钮 (分类标签已按要求从主页移除，仅在随心抽弹窗内部保留)
                         item(span = { GridItemSpan(3) }) {
@@ -413,7 +409,7 @@ fun MainScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             RadioInputTab(
-                                text = "SKill",
+                                text = "Skill",
                                 selected = skillSubTabIndex == 1,
                                 onClick = { skillSubTabIndex = 1 },
                                 modifier = Modifier.weight(1f)
