@@ -53,7 +53,7 @@ import java.util.UUID
 enum class AppBottomTab(val title: String) {
     HOME("首页"),
     SOFTWARE("软件"),
-    SKILL("SKill"),
+    SKILL("Skill"),
     TOOLBOX("工具箱"),
     SETTINGS("设置")
 }
@@ -92,11 +92,36 @@ data class NavUiState(
 
 class NavViewModel(
     private val repository: NavRepository,
-    private val remoteConfigRepository: RemoteConfigRepository? = null
+    private val remoteConfigRepository: RemoteConfigRepository? = null,
+    private val appContext: Context? = null
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NavUiState())
     val uiState: StateFlow<NavUiState> = _uiState
+
+    // ===== 本地「隐藏墓碑」：本体删除云端条目后，云端轮询不再把它同步回来 =====
+    // （解决「本体删除后过一会儿又出现」的同步不到位问题）
+    private val hiddenPrefs: android.content.SharedPreferences? =
+        appContext?.getSharedPreferences("landezhao_hidden_resources", Context.MODE_PRIVATE)
+
+    private fun hiddenIds(): Set<String> =
+        hiddenPrefs?.getStringSet("hidden_ids", emptySet()) ?: emptySet()
+
+    private fun isHidden(id: String): Boolean = hiddenIds().contains(id)
+
+    private fun hideResource(id: String) {
+        val prefs = hiddenPrefs ?: return
+        val set = prefs.getStringSet("hidden_ids", emptySet())?.toMutableSet() ?: mutableSetOf()
+        set.add(id)
+        prefs.edit().putStringSet("hidden_ids", set).apply()
+    }
+
+    private fun unhideResource(id: String) {
+        val prefs = hiddenPrefs ?: return
+        val set = prefs.getStringSet("hidden_ids", emptySet())?.toMutableSet() ?: mutableSetOf()
+        set.remove(id)
+        prefs.edit().putStringSet("hidden_ids", set).apply()
+    }
 
     // 云端全局主题代码签名（v1.1.10：改为内容签名对比——控制台「应用」后内容变化立即重新生效，
     // 内容未变时不重复应用，避免每 5 秒轮询重复覆盖用户手动修改的主题）
@@ -278,6 +303,8 @@ class NavViewModel(
             }
 
             cloudSoftwares.forEach { sw ->
+                // v1.1.15：本体主动删除的云端条目（墓碑）不再被云端轮询恢复
+                if (isHidden(sw.id)) return@forEach
                 // v1.7.4 修复：控制台文件模式把上传文件直链存在 apkUrl 字段，必须映射到 fileUrl，
                 // 否则本体拿不到下载链接（显示「未配置下载」）。URL 模式 apkUrl 为跳转直链。
                 val fileLink = sw.apkUrl.ifBlank { sw.url }
@@ -300,6 +327,8 @@ class NavViewModel(
                 }
             }
             cloudSkills.forEach { sk ->
+                // v1.1.15：本体主动删除的云端条目（墓碑）不再被云端轮询恢复
+                if (isHidden(sk.id)) return@forEach
                 // v1.7.4：Skill 文件模式直链在 url 字段；URL 模式 url 为跳转直链
                 val candidate = UploadedResourceEntity(
                     id = sk.id,
@@ -324,13 +353,22 @@ class NavViewModel(
             }
 
             // v1.8.7：云端下架 → 本体同步删除（控制台删除某软件/Skill 后点「应用」，本体实时移除）
+            // v1.1.15：删除判定不再限定 sw_/sk_ 前缀（兼容 init- 等云端 id 风格），
+            // 只要属于云端管理类型且不在云端 id 全集即视为下架；用户本地上传（res_）条目永不自动删除。
             try {
                 localAll.forEach { local ->
-                    val isCloudSoftware = local.type == "software" && local.id.startsWith("sw_")
-                    val isCloudSkill = (local.type == "skill" || local.type == "prompt_image" || local.type == "prompt_video") && local.id.startsWith("sk_")
-                    val deleted = (isCloudSoftware && local.id !in cloudSwIds) || (isCloudSkill && local.id !in cloudSkIds)
-                    if (deleted) {
+                    val isCloudType = local.type == "software" || local.type == "skill" ||
+                        local.type == "prompt_image" || local.type == "prompt_video"
+                    // 云端管理的条目：非用户本地上传（用户上传 id 以 res_ 开头、badge=作者投递）
+                    val isCloudManaged = isCloudType && !local.id.startsWith("res_")
+                    val inCloud = when (local.type) {
+                        "software" -> local.id in cloudSwIds
+                        else -> local.id in cloudSkIds
+                    }
+                    if (isCloudManaged && !inCloud) {
                         repository.deleteUploadedResource(local.id)
+                        // 云端已下架该条目：清除本地墓碑（之后控制台重新添加可正常显示）
+                        unhideResource(local.id)
                     }
                 }
             } catch (e: Exception) {
@@ -497,7 +535,7 @@ class NavViewModel(
         }
 
         _uiState.value = _uiState.value.copy(
-            currentTheme = newTheme,
+            currentTheme = ThemePresetsRepository.defaultTheme,
             activeUiverseState = _uiState.value.activeUiverseState.copy(
                 activeKit = kit,
                 cardStyle = newCardStyle,
@@ -512,20 +550,10 @@ class NavViewModel(
 
     fun applyUiverseCustomCss(css: String, html: String) {
         val parsed = UiverseCssEngine.parseCss(css, html)
-        val customTheme = ThemePreset(
-            id = "custom_css",
-            name = "自定义代码驱动",
-            style = "custom",
-            categoryName = "Custom",
-            primaryColor = parsed.textColor ?: androidx.compose.ui.graphics.Color(0xFF6366F1),
-            secondaryColor = parsed.borderColor.takeIf { it != androidx.compose.ui.graphics.Color.Transparent }
-                ?: androidx.compose.ui.graphics.Color(0xFFEC4899),
-            bgColor = parsed.backgroundColor ?: androidx.compose.ui.graphics.Color(0xFF0F172A),
-            surfaceColor = parsed.backgroundColor ?: androidx.compose.ui.graphics.Color(0xFF1E293B),
-            textColor = parsed.textColor ?: androidx.compose.ui.graphics.Color(0xFFF8FAFC)
-        )
+        // v1.1.15 修复「白底绿字」：云端自定义 CSS 不再覆盖本体主题色，经典皮肤恒定生效
+        // （自定义 CSS 仍可作用于组件样式 activeUiverseState，但不改变全局主题颜色）
         _uiState.value = _uiState.value.copy(
-            currentTheme = customTheme,
+            currentTheme = ThemePresetsRepository.defaultTheme,
             activeUiverseState = _uiState.value.activeUiverseState.copy(
                 activeKit = UiKitPreset.CUSTOM_CODE,
                 cardStyle = CardStylePreset.CUSTOM,
@@ -624,6 +652,8 @@ class NavViewModel(
     fun deleteUploadedResource(id: String) {
         viewModelScope.launch {
             repository.deleteUploadedResource(id)
+            // 记录隐藏墓碑：云端轮询同步时跳过该 id，避免「删除后又出现」
+            hideResource(id)
         }
     }
 
@@ -902,12 +932,13 @@ class NavViewModel(
 
 class NavViewModelFactory(
     private val repository: NavRepository,
-    private val remoteConfigRepository: RemoteConfigRepository? = null
+    private val remoteConfigRepository: RemoteConfigRepository? = null,
+    private val application: android.app.Application? = null
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NavViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return NavViewModel(repository, remoteConfigRepository) as T
+            return NavViewModel(repository, remoteConfigRepository, application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
