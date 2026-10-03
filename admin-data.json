@@ -1,24 +1,19 @@
 {
   "version": {
-    "code": 115,
-    "name": "1.1.15",
+    "code": 116,
+    "name": "1.1.16",
     "changelog": [
-      "【11:28】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【03:48】更新开屏动画配置（默认/自定义模式）",
-      "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【03:48】更新开屏动画配置（默认/自定义模式）",
-      "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【03:47】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【00:17】更新欢迎弹窗：欢迎语嗨～欢迎回家！愿你在这里发现更多宝藏！，比例compact",
-      "【14:59】更新主题工具箱组件样式",
-      "【14:58】更新主题工具箱组件样式",
-      "【14:58】更新主题工具箱组件样式"
+      "✨ v1.1.16 更新来啦～",
+      "【修复】欢迎弹窗不再每次启动都弹出（同一内容只弹一次）",
+      "【新增】工具箱内置 10 个真实工具：计算器+/单位换算/数日子/时间计算/帮我做决定/数字时钟/计分板/补光灯/随手记/极简记账（无需跳转外链）",
+      "【修复】Skill 版块顶部恢复紧凑 FilterChip（提示词区/Skill 技能库）",
+      "【修复】软件 icon 多源自动回退，不再缺图标",
+      "【优化】云端同步改 60 秒轮询，控制台改完实时生效",
+      "【移除】工具箱跳转外链的假工具条目"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.15-1790995730.apk",
-    "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.15-1790995730.apk"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.16-1791000793.apk",
+    "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.16-1791000793.apk"
   },
   "home": {
     "categories": [
