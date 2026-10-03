@@ -5,6 +5,7 @@ import android.speech.tts.TextToSpeech
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -76,10 +77,11 @@ fun AlipayVoiceSection(modifier: Modifier = Modifier) {
             onReady()
             return
         }
-        val engine = TextToSpeech(context.applicationContext) { status ->
+        var engine: TextToSpeech? = null
+        engine = TextToSpeech(context.applicationContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                engine.language = Locale.CHINA
-                engine.setSpeechRate(1.0f)
+                engine?.language = Locale.CHINA
+                engine?.setSpeechRate(1.0f)
                 tts = engine
                 ttsReady = true
                 onReady()
@@ -233,4 +235,4 @@ private fun buildSpeechText(amountStr: String): String? {
 
 /** 轻量点击包装 */
 private fun Modifier.clickableChip(onClick: () -> Unit): Modifier =
-    this.then(androidx.compose.foundation.clickable(onClick = onClick))
+    this.clickable(onClick = onClick)
