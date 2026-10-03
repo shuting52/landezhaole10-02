@@ -188,7 +188,9 @@ fun MainScreen(
     var showCategoryBottomSheet by remember { mutableStateOf(false) }
     var showCloudUpdateDialog by remember { mutableStateOf(false) }
     var updateDialogDismissed by remember { mutableStateOf(false) }
-    var welcomeDialogDismissed by remember { mutableStateOf(false) }
+    // v1.1.16 修复「欢迎弹窗每次启动都自动弹出」：改为持久化记录已确认的欢迎内容签名，
+    // 同一内容的欢迎弹窗只弹一次（控制台更新欢迎内容后才重新弹），不再每次冷启动都弹。
+    var dismissedWelcomeSig by remember { mutableStateOf<String?>(null) }
     var showShutdownDialog by remember { mutableStateOf(false) }
 
     // 启动时恢复自定义背景（跨重启持久）
@@ -392,28 +394,32 @@ fun MainScreen(
                             .fillMaxSize()
                             .padding(paddingValues)
                     ) {
-                        // v1.1.12：Skill 顶部 Tab 重写为 Uiverse「radio-inputs」样式（用户指定）：
-                        // 绿色容器 + 白色选中胶囊 + 底部两侧半圆缺口（尺寸已按移动端适配）
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(0.9f)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(Color(0xFF70C489))
-                                .padding(start = 14.dp, end = 14.dp, top = 12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        // v1.1.16 修复「提示词/Skill 按钮太长」：恢复 v1.1.11 之前的顶部 FilterChip 呈现方式
+                        // （简洁紧凑并排，不再使用绿色容器 + 白色胶囊的 radio-inputs 长条样式）
+                        Surface(
+                            color = MaterialTheme.colorScheme.surface,
+                            tonalElevation = 2.dp,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            RadioInputTab(
-                                text = "提示词",
-                                selected = skillSubTabIndex == 0,
-                                onClick = { skillSubTabIndex = 0 },
-                                modifier = Modifier.weight(1f)
-                            )
-                            RadioInputTab(
-                                text = "Skill",
-                                selected = skillSubTabIndex == 1,
-                                onClick = { skillSubTabIndex = 1 },
-                                modifier = Modifier.weight(1f)
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                androidx.compose.material3.FilterChip(
+                                    selected = skillSubTabIndex == 0,
+                                    onClick = { skillSubTabIndex = 0 },
+                                    label = { Text("提示词区", fontWeight = FontWeight.Bold, fontSize = 11.5.sp) },
+                                    modifier = Modifier.weight(1f)
+                                )
+                                androidx.compose.material3.FilterChip(
+                                    selected = skillSubTabIndex == 1,
+                                    onClick = { skillSubTabIndex = 1 },
+                                    label = { Text("Skill 技能库", fontWeight = FontWeight.Bold, fontSize = 11.5.sp) },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
 
                         if (skillSubTabIndex == 0) {
@@ -588,11 +594,27 @@ fun MainScreen(
 
         // 云端欢迎界面弹窗：仅开屏结束后才展示（避免开屏期间弹窗盖在开屏之上）
         // v1.7.2：改为可爱卡通动态绘制弹窗（底部滑入 + 表情摇摆 + 粉紫渐变），欢迎语每行一条独立呈现
+        // v1.1.16：同一内容的欢迎弹窗只弹一次（持久化签名），不再每次启动都自动弹出
         val cloudWelcome = uiState.cloudWelcome
-        if (uiState.isCloudReady && !uiState.isSplashVisible && cloudWelcome?.enabled == true && !welcomeDialogDismissed) {
+        val welcomeSig = (cloudWelcome?.title ?: "") + "|" + (cloudWelcome?.content ?: "") + "|" + (cloudWelcome?.welcomeText ?: "") + "|" + (cloudWelcome?.imageUrl ?: "")
+        // 从持久化存储读取上次已确认的欢迎签名（启动时读取一次）
+        LaunchedEffect(welcomeSig) {
+            if (dismissedWelcomeSig == null) {
+                dismissedWelcomeSig = context.getSharedPreferences("lzdz_welcome_prefs", Context.MODE_PRIVATE)
+                    .getString("dismissed_welcome_sig", null)
+            }
+        }
+        val shouldShowWelcome = uiState.isCloudReady && !uiState.isSplashVisible &&
+            cloudWelcome?.enabled == true && dismissedWelcomeSig != welcomeSig
+        if (shouldShowWelcome) {
             CuteWelcomeDialog(
                 welcome = cloudWelcome,
-                onDismiss = { welcomeDialogDismissed = true }
+                onDismiss = {
+                    // 记录已确认签名（持久化），同一内容下次启动不再弹
+                    context.getSharedPreferences("lzdz_welcome_prefs", Context.MODE_PRIVATE)
+                        .edit().putString("dismissed_welcome_sig", welcomeSig).apply()
+                    dismissedWelcomeSig = welcomeSig
+                }
             )
         }
 
