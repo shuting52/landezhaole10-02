@@ -1,16 +1,16 @@
 {
  "version": {
-  "code": 120,
-  "name": "1.1.20",
+  "code": 121,
+  "name": "1.1.21",
   "changelog": [
-   "✨ v1.1.20 更新来啦～",
-   "【站点卡片】改为浅粉→浅紫→浅蓝 三色静态渐变背景，标题黑色、描述深灰，文字更清晰不抢眼",
-   "【移除】不再使用彩虹旋转背景与 80% 白覆盖层（白底绿字问题彻底消除）",
-   "【体验】首页卡片观感更干净柔和，经典皮肤下统一渐变风格"
+   "✨ v1.1.21 更新来啦～",
+   "【修复】站点卡片渐变背景真正生效：之前云端全局白色主题会覆盖卡片背景，本次修复后无论经典/默认皮肤，卡片都显示浅粉→浅紫→浅蓝三色渐变",
+   "【文字】卡片标题统一黑色、描述深灰，浅色渐变上清晰可读",
+   "【兼容】用户主动定制的非白色卡片背景仍会保留，不受影响"
   ],
   "force": false,
-  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.20-1791022509.apk",
-  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.20-1791022509.apk"
+  "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/landezhao-v1.1.21-1791023523.apk",
+  "apkUrlRaw": "https://github.com/shuting52/landezhaole10-02/raw/main/dist/apk/landezhao-v1.1.21-1791023523.apk"
  },
  "home": {
   "categories": [
